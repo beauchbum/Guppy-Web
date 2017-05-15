@@ -64,7 +64,7 @@ def make_session_permanent():
 def index():
 
     if "sid" in session:
-
+        following = []
 
 
         my_devices = []
