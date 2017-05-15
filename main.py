@@ -28,7 +28,7 @@ IP = "52.38.141.152"
 ACCESS_TOKEN = ""
 
 # Server-side Parameters
-CLIENT_SIDE_URL = "https://guppy-web.appspot.com"
+CLIENT_SIDE_URL = "https://guppy-web.appspot.com/callback/q"
 PORT = 8000
 REDIRECT_URI = "{}:{}/callback/q".format(CLIENT_SIDE_URL, PORT)
 REDIRECT_URI = CLIENT_SIDE_URL
