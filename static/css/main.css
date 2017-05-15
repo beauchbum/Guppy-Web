@@ -3297,13 +3297,14 @@
 
 /* Narrower */
 
+	/*
+
 	#navPanel, #navButton {
 		display: none;
 	}
 
 	@media screen and (max-width: 840px) {
 
-		/* Basic */
 
 			html, body {
 				overflow-x: hidden;
@@ -3317,7 +3318,6 @@
 				display: none;
 			}
 
-		/* Section/Article */
 
 			header br {
 				display: none;
@@ -3327,7 +3327,6 @@
 				padding: 0 4em;
 			}
 
-		/* Box */
 
 			.box {
 				padding: 3em 2em;
@@ -3352,7 +3351,6 @@
 						margin-top: 3em;
 					}
 
-		/* Header */
 
 			#page-wrapper {
 				padding-top: 0;
@@ -3362,9 +3360,7 @@
 				display: none;
 			}
 
-		/* Banner */
 
-		/* Off-Canvas Navigation */
 
 			#page-wrapper {
 				-moz-backface-visibility: hidden;
@@ -3523,6 +3519,8 @@
 			}
 
 	}
+
+	*/
 
 /* Mobile */
 

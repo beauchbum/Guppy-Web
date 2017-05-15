@@ -8,6 +8,7 @@ import urllib2
 import urllib
 from datetime import timedelta
 import json
+import os
 
 
 # Authentication Steps, paramaters, and responses are defined at https://developer.spotify.com/web-api/authorization-guide/
@@ -16,7 +17,6 @@ import json
 app = Flask(__name__)
 
 
-requests_toolbelt.adapters.appengine.monkeypatch()
 
 #  Client Keys
 CLIENT_ID = "57b61875218e4e1f8a8d0cdb57a7259b"
@@ -33,12 +33,16 @@ IP = "52.38.141.152"
 ACCESS_TOKEN = ""
 
 # Server-side Parameters
-CLIENT_SIDE_URL = "https://guppy-web.appspot.com/callback/q"
-PORT = 8000
-REDIRECT_URI = "{}:{}/callback/q".format(CLIENT_SIDE_URL, PORT)
-REDIRECT_URI = CLIENT_SIDE_URL
+if os.getenv('SERVER_SOFTWARE', '').startswith('Google App Engine/'):
+    REDIRECT_URI = "https://guppy-web.appspot.com/callback/q"
+    requests_toolbelt.adapters.appengine.monkeypatch()
+
+else:
+    CLIENT_SIDE_URL = "http://127.0.0.1"
+    PORT = 8000
+    REDIRECT_URI = "{}:{}/callback/q".format(CLIENT_SIDE_URL, PORT)
 #REDIRECT_URI = "sync-me-up://callback"
-SCOPE = "playlist-modify-public playlist-modify-private"
+SCOPE = "playlist-modify-public playlist-modify-private user-read-playback-state"
 STATE = ""
 SHOW_DIALOG_bool = True
 SHOW_DIALOG_str = str(SHOW_DIALOG_bool).lower()
@@ -200,8 +204,11 @@ def tune_in():
             anonymous = 0
         url = "http://" + IP + "/start_playback.php"
         temp_data = urllib.urlencode(
-            {'my_gid': tune_in_my_gid, 'their_gid': tune_in_their_gid, 'device_id': device_id, 'anonymous': anonymous})
+            {'my_gid': str(tune_in_my_gid), 'their_gid': str(tune_in_their_gid), 'device_id': str(device_id), 'anonymous': str(anonymous)})
         result = urllib2.urlopen(url, temp_data)
+        data = json.load(result)
+        print "RESLT"
+        print data["success"]
     return redirect(url_for('index'))
 
 
@@ -210,6 +217,16 @@ def tune_out():
     if "tune_out_my_gid" in request.form:
         tune_out_my_gid = request.form["tune_out_my_gid"]
         url = "http://" + IP + "/stop_playback.php?my_gid=%s" % (tune_out_my_gid)
+        result = urllib2.urlopen(url)
+        return redirect(url_for('index'))
+    return redirect(url_for('index'))
+
+
+@app.route('/refresh_devices', methods=["POST"])
+def refresh_devices():
+    if "my_gid" in request.form:
+        refresh_my_gid = request.form["my_gid"]
+        url = "http://" + IP + "/refresh_my_devices.php?gid=%s" % (refresh_my_gid)
         result = urllib2.urlopen(url)
         return redirect(url_for('index'))
     return redirect(url_for('index'))
