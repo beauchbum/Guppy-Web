@@ -1,0 +1,321 @@
+<!DOCTYPE HTML>
+<!--
+	Alpha by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+		<!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
+		<link rel="stylesheet" href="/static/css/main.css" />
+		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
+		
+	<script>
+	
+	function validateForm(form) {
+    var x = form["device_select"].value;
+    if (x == "no device") {
+        alert("Must select device");
+        return false;
+		}
+	}
+	
+	</script>
+
+		
+	</head>
+	<body>
+		<div id="page-wrapper">
+
+			<!-- Header -->
+				<header id="header">
+					<nav id="nav">
+						<ul>
+							{% if logged==false %}
+								<li><a href="/authorize" class="button">Login</a></li>
+							{% else %}
+								<li><img src={{ my_prof_pic }} class="img-circle" height="50" width="50" alt="Smiley face" style="vertical-align:middle"></li>
+								<li><a href="/logout" class="button">Logout</a></li>
+
+
+							{% endif %}
+
+							
+						</ul>
+					</nav>
+				</header>
+			<!--
+				<section id="banner">
+					
+					<img src="/static/images/logo_cropped.png" class="img-circle" alt="Cinque Terre" width="250" height="250"> 					
+					<h2>Guppy</h2>
+					<p>Web Application for sharing music</p>
+					<ul class="actions">
+						{% if logged == false %}
+						<li><a href="/authorize" class="button special">Connect to Spotify</a></li>
+						{% endif %}
+						<li><a href="#" class="button">Learn More</a></li>
+					</ul>
+				</section>
+			-->
+
+			<!-- Main -->
+				<section id="main" class="container">
+					<!-- <header>
+						<h2>Elements</h2>
+						<p>Just an assorted selection of elements.</p>
+					</header>
+					-->
+					<!-- <section class="box special"> -->
+					<header>
+						<h2 style="display:inline; padding-right:10px">Guppy</h2>
+						<img src="/static/images/logo_cropped.png" class="img-circle" alt="Cinque Terre" width="75" height="75" style="vertical-align:bottom">
+						{% if logged == false %}
+						<br>
+						<h3>Share your music with friends. Login to get started</h3>
+						{% else %}
+						<h2 align="center" style>Your Friends</h2>
+						{% endif %}
+					</header>
+					<!-- </section> -->
+						
+						<div class="list-group" style="max-height:500px; overflow: auto">
+						
+						{% for l in listening %}
+							  <a data-toggle="modal" href="#myModal" class="list-group-item list-group-item-action flex-column align-items-start active">
+							  <div style="display:inline-block; vertical-align:top">
+								<img src={{ l.prof_pic }}  height="70" width="70" alt="Smiley face" style="vertical-align: middle">
+								<b>	
+								</div>
+								<div style="display:inline-block;vertical-align:middle">
+								<span style="color:white; font-size: 1.5em; padding-left: 10px; vertical-align: top;">{{ l.name }}</span>
+								<br>
+								<span style="color:white; padding-left:15px; vertical-align: bottom;">{{ l.song }} by {{l.artist}}</span>
+								</b>
+								</div>
+								<span style="vertical-align:top; float:right;"> TEST </span>
+
+
+							  </a>
+							  
+							  <div id="myModal" class="modal fade" role="dialog" style="padding-top:40px">
+									  <div class="modal-dialog">
+
+										<!-- Modal content-->
+										<div class="modal-content">
+										  <div class="modal-header">
+										 
+											<h4 class="modal-title">
+												{{ l.name }} - 
+												<font face="verdana" color="green">Active</font>
+												<button type="button" class="close" data-dismiss="modal">&times;</button>
+											</h4>
+											
+
+										  </div>
+										  <div class="modal-body">
+											<img src={{ l.prof_pic }} class="img-circle" height="90" width="90" alt="Smiley face" style="vertical-align: middle">
+											<input type="checkbox" data-width="120" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" style="padding-left:20px">
+										  </div>	
+										  <div class="modal-footer">
+											<div class="form-group row"> 
+
+											  <form name="tune_out_form" action="/tune_out" method = "POST"><input type="hidden" name="tune_out_my_gid" value={{ my_gid }} onsubmit="setTimeout(function () { window.location.reload(); }, 10)">
+
+
+											  <div class="col-md-3">
+												<span><button type="submit" class="btn btn-warning"> Tune Out</button></span>
+											  </div>
+											  
+											  </form>
+											</div>
+										  </div>
+										</div>
+
+									  </div>
+									</div>
+						 {% endfor %}
+						{% for f in following %}
+							  <a data-toggle="modal" href="#myModal" class="list-group-item list-group-item-action flex-column align-items-start">
+							  <div style="display:inline-block; vertical-align:top">
+								<img src={{ f.prof_pic }}  height="70" width="70" alt="Smiley face" style="vertical-align: middle">
+								<b>	
+								</div>
+								<div style="display:inline-block;vertical-align:middle">
+								<span style="font-size: 1.5em; padding-left: 10px; vertical-align: top;">{{ f.name }}</span>
+								<br>
+								<span style="padding-left:15px; vertical-align: bottom;">{{ f.song }} by {{f.artist}}</span>
+								</b>
+								</div>
+								<span style="vertical-align:top; float:right;"> TEST </span>
+
+
+							  </a>
+							  
+							  <div id="myModal" class="modal fade" role="dialog" style="padding-top:40px">
+									  <div class="modal-dialog">
+
+										<!-- Modal content-->
+										<div class="modal-content">
+										  <div class="modal-header">
+										 
+											<h4 class="modal-title">
+												{{ f.name }} - 
+												<font face="verdana" color="green">Active</font>
+												<button type="button" class="close" data-dismiss="modal">&times;</button>
+											</h4>
+											
+
+										  </div>
+										  <div class="modal-body">
+											<img src={{ f.prof_pic }} class="img-circle" height="90" width="90" alt="Smiley face" style="vertical-align: middle">
+											<input type="checkbox" data-width="120" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" style="padding-left:20px">
+										  </div>
+										  <div class="modal-footer">
+											<div class="form-group row"> 
+
+											  <div class="col-md-5" >
+											  <form name="tune_form" action="/tune_in" method = "POST" onsubmit="return validateForm(this)"><input type="hidden" name="tune_in_their_gid" value={{ f.gid }}><input type="hidden" name="tune_in_my_gid" value={{ my_gid }}>
+											   <select class="form-control" name="device_select" required>
+													<option hidden value="no device" >Select Device</option>
+													{% for d in devices %}
+													<option value = {{ d.device_id }}>{{ d.device_name }} </option>
+													{% endfor %}
+												</select>
+											  </div>
+											  
+											<div class="col-md-4">
+											   <select class="form-control" name="listener" required>
+											   		<option value = {{ my_name }}> As {{ my_name }}</option>											
+													<option value = "anonymous"> Anonymous </option>
+												</select>
+												 
+											</div>
+
+
+											  <div class="col-md-3">
+												<span><button type="submit" class="btn btn-primary"> Tune In</button></span>
+											  </div>
+											  
+											  </form>
+											</div>
+										  </div>
+										</div>
+
+									  </div>
+									</div>
+						 {% endfor %}
+
+						</div>
+					
+
+					<section class="box special features">
+						<div class="features-row">
+							<section>
+								<span class="icon major fa-bolt accent2"></span>
+								<h3>Magna etiam</h3>
+								<p>Integer volutpat ante et accumsan commophasellus sed aliquam feugiat lorem aliquet ut enim rutrum phasellus iaculis accumsan dolore magna aliquam veroeros.</p>
+							</section>
+							<section>
+								<span class="icon major fa-area-chart accent3"></span>
+								<h3>Ipsum dolor</h3>
+								<p>Integer volutpat ante et accumsan commophasellus sed aliquam feugiat lorem aliquet ut enim rutrum phasellus iaculis accumsan dolore magna aliquam veroeros.</p>
+							</section>
+						</div>
+						<div class="features-row">
+							<section>
+								<span class="icon major fa-cloud accent4"></span>
+								<h3>Sed feugiat</h3>
+								<p>Integer volutpat ante et accumsan commophasellus sed aliquam feugiat lorem aliquet ut enim rutrum phasellus iaculis accumsan dolore magna aliquam veroeros.</p>
+							</section>
+							<section>
+								<span class="icon major fa-lock accent5"></span>
+								<h3>Enim phasellus</h3>
+								<p>Integer volutpat ante et accumsan commophasellus sed aliquam feugiat lorem aliquet ut enim rutrum phasellus iaculis accumsan dolore magna aliquam veroeros.</p>
+							</section>
+						</div>
+					</section>
+
+					<div class="row">
+						<div class="6u 12u(narrower)">
+
+							<section class="box special">
+								<span class="image featured"><img src="/static/images/pic02.jpg" alt="" /></span>
+								<h3>Sed lorem adipiscing</h3>
+								<p>Integer volutpat ante et accumsan commophasellus sed aliquam feugiat lorem aliquet ut enim rutrum phasellus iaculis accumsan dolore magna aliquam veroeros.</p>
+								<ul class="actions">
+									<li><a href="#" class="button alt">Learn More</a></li>
+								</ul>
+							</section>
+
+						</div>
+						<div class="6u 12u(narrower)">
+
+							<section class="box special">
+								<span class="image featured"><img src="/static/images/pic03.jpg" alt="" /></span>
+								<h3>Accumsan integer</h3>
+								<p>Integer volutpat ante et accumsan commophasellus sed aliquam feugiat lorem aliquet ut enim rutrum phasellus iaculis accumsan dolore magna aliquam veroeros.</p>
+								<ul class="actions">
+									<li><a href="#" class="button alt">Learn More</a></li>
+								</ul>
+							</section>
+
+						</div>
+					</div>
+
+				</section>
+
+			<!-- CTA -->
+				<section id="cta">
+
+					<h2>Sign up for beta access</h2>
+					<p>Blandit varius ut praesent nascetur eu penatibus nisi risus faucibus nunc.</p>
+
+					<form>
+						<div class="row uniform 50%">
+							<div class="8u 12u(mobilep)">
+								<input type="email" name="email" id="email" placeholder="Email Address" />
+							</div>
+							<div class="4u 12u(mobilep)">
+								<input type="submit" value="Sign Up" class="fit" />
+							</div>
+						</div>
+					</form>
+
+				</section>
+
+			<!-- Footer -->
+				<footer id="footer">
+					<ul class="icons">
+						<li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
+						<li><a href="#" class="icon fa-facebook"><span class="label">Facebook</span></a></li>
+						<li><a href="#" class="icon fa-instagram"><span class="label">Instagram</span></a></li>
+						<li><a href="#" class="icon fa-github"><span class="label">Github</span></a></li>
+						<li><a href="#" class="icon fa-dribbble"><span class="label">Dribbble</span></a></li>
+						<li><a href="#" class="icon fa-google-plus"><span class="label">Google+</span></a></li>
+					</ul>
+					<ul class="copyright">
+						<li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+					</ul>
+				</footer>
+
+		</div>
+
+		<!-- Scripts -->
+			<script src="/static/js/jquery.min.js"></script>
+			<script src="/static/js/jquery.dropotron.min.js"></script>
+			<script src="/static/js/jquery.scrollgress.min.js"></script>
+			<script src="/static/js/skel.min.js"></script>
+			<script src="/static/js/util.js"></script>
+			<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
+			<script src="/static/js/main.js"></script>
+
+	</body>
+</html>

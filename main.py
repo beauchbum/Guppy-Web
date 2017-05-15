@@ -1,18 +1,221 @@
-from flask import Flask
+import json
+from flask import Flask, request, redirect, g, render_template, make_response, url_for, session
+import requests
+import base64
+import urllib2
+import urllib
+from datetime import timedelta
+import json
+
+
+# Authentication Steps, paramaters, and responses are defined at https://developer.spotify.com/web-api/authorization-guide/
+# Visit this url to see all the steps, parameters, and expected response.
+
 app = Flask(__name__)
-app.config['DEBUG'] = True
 
-# Note: We don't need to call run() since our application is embedded within
-# the App Engine WSGI application server.
+#  Client Keys
+CLIENT_ID = "57b61875218e4e1f8a8d0cdb57a7259b"
+CLIENT_SECRET = "1b705460a08a48d1b4c94a17c7d37aff"
+
+# Spotify URLS
+SPOTIFY_AUTH_URL = "https://accounts.spotify.com/authorize"
+SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token"
+SPOTIFY_API_BASE_URL = "https://api.spotify.com"
+API_VERSION = "v1"
+SPOTIFY_API_URL = "{}/{}".format(SPOTIFY_API_BASE_URL, API_VERSION)
+IP = "52.38.141.152"
+
+ACCESS_TOKEN = ""
+
+# Server-side Parameters
+CLIENT_SIDE_URL = "http://127.0.0.1"
+PORT = 8000
+REDIRECT_URI = "{}:{}/callback/q".format(CLIENT_SIDE_URL, PORT)
+#REDIRECT_URI = "sync-me-up://callback"
+SCOPE = "playlist-modify-public playlist-modify-private"
+STATE = ""
+SHOW_DIALOG_bool = True
+SHOW_DIALOG_str = str(SHOW_DIALOG_bool).lower()
+
+UNKNOWN = "User Unknown"
+
+auth_query_parameters = {
+    "response_type": "code",
+    "redirect_uri": REDIRECT_URI,
+    "scope": SCOPE,
+    # "state": STATE,
+    # "show_dialog": SHOW_DIALOG_str,
+    "client_id": CLIENT_ID
+}
+
+@app.before_request
+def make_session_permanent():
+    print "session made perm"
+    session.permanent = True
 
 
-@app.route('/')
-def hello():
-    """Return a friendly HTTP greeting."""
-    return 'Hello World!'
+@app.route("/", methods=["POST", "GET"])
+def index():
+
+    if "sid" in session:
 
 
-@app.errorhandler(404)
-def page_not_found(e):
-    """Return a custom 404 error."""
-    return 'Sorry, nothing at this URL.', 404
+
+        my_devices = []
+        print "hello"
+        url = "http://" + IP + "/get_guppy_id.php?spotify_id=%s" % (session['sid'])
+        result = urllib2.urlopen(url)
+        data = json.load(result)
+        if data['success'] == 1:
+            user = data['user'][0]
+            my_gid = user['guppy_id']
+            my_prof_pic = user['prof_pic']
+            listening_gid = user["id"]
+            listening = []
+
+            if listening_gid is not None:
+                url = "http://" + IP + "/get_listening_state.php?gid=%s" % (listening_gid)
+                result = urllib2.urlopen(url)
+                data = json.load(result)
+                users = data["users"]
+                for u in users:
+                    listening_name = u['name']
+                    listening_prof_pic = u['prof_pic']
+                    listening_prof_url = u['prof_url']
+                    listening_artist = u['artist']
+                    listening_song = u['song']
+                    listening.append({"gid": listening_gid, "name": listening_name, "prof_pic": listening_prof_pic,
+                                      "prof_url": listening_prof_url, "artist": listening_artist,
+                                      "song": listening_song})
+
+            url = "http://" + IP + "/get_devices.php?gid=%s" % (my_gid)
+            result = urllib2.urlopen(url)
+            data = json.load(result)
+
+            if data["success"] == 1:
+                devices = data["devices"]
+                my_name = user['name']
+                url = "http://" + IP + "/get_following.php?current_user_id=%s" % (my_gid)
+                result = urllib2.urlopen(url)
+                data = json.load(result)
+
+                if data['success'] == 1:
+                    following = []
+                    users = data['users']
+                    for u in users:
+                        following_gid = u['guppy_id']
+                        if following_gid != listening_gid:
+                            following_name = u['name']
+                            following_prof_pic = u['prof_pic']
+                            following_prof_url = u['prof_url']
+                            following_artist = u['artist']
+                            following_song = u['song']
+                            following.append({"gid":following_gid, "name":following_name, "prof_pic":following_prof_pic, "prof_url":following_prof_url, "artist":following_artist, "song":following_song})
+        return render_template("index.html", logged=True, following=following, my_name=my_name, my_gid = my_gid, my_prof_pic=my_prof_pic, devices=devices, listening=listening)
+    else:
+        following = []
+        my_devices = []
+        listening = []
+        return render_template("index.html", logged=False, following=following, my_name=UNKNOWN, listening=listening)
+
+
+
+
+@app.route("/authorize")
+def authorize():
+    # Auth Step 1: Authorization
+    url_args = "&".join(["{}={}".format(key,urllib.quote(val)) for key,val in auth_query_parameters.iteritems()])
+    auth_url = "{}/?{}".format(SPOTIFY_AUTH_URL, url_args)
+    return redirect(auth_url)
+
+@app.route("/callback/q")
+def callback():
+    # Auth Step 4: Requests refresh and access tokens
+    auth_token = request.args['code']
+    code_payload = {
+        "grant_type": "authorization_code",
+        "code": str(auth_token),
+        "redirect_uri": REDIRECT_URI
+    }
+    base64encoded = base64.b64encode("{}:{}".format(CLIENT_ID, CLIENT_SECRET))
+    headers = {"Authorization": "Basic {}".format(base64encoded)}
+    post_request = requests.post(SPOTIFY_TOKEN_URL, data=code_payload, headers=headers)
+
+    # Auth Step 5: Tokens are Returned to Application
+    response_data = json.loads(post_request.text)
+    access_token = response_data["access_token"]
+    refresh_token = response_data["refresh_token"]
+    token_type = response_data["token_type"]
+    expires_in = response_data["expires_in"]
+
+    # Auth Step 6: Use the access token to access Spotify API
+    authorization_header = {"Authorization":"Bearer {}".format(access_token)}
+
+    # Get profile data
+    user_profile_api_endpoint = "{}/me".format(SPOTIFY_API_URL)
+    profile_response = requests.get(user_profile_api_endpoint, headers=authorization_header)
+    profile_data = json.loads(profile_response.text)
+
+
+    # Combine profile and playlist data to display
+    #display_arr = [profile_data] + playlist_data["items"]
+
+    print profile_data
+    sid = profile_data['id']
+    name = profile_data['display_name']
+    prof_url = profile_data['external_urls']['spotify']
+    prof_pic = profile_data['images'][0]['url']
+
+
+
+    session["sid"] = sid
+    url = "http://" + IP + "/create_user.php"
+    data = urllib.urlencode({'name': name, 'profile_url':prof_url, 'id':sid, 'prof_pic':prof_pic, 'access_token':access_token, 'refresh_token':refresh_token})
+    result = urllib2.urlopen(url, data)
+    url = "http://" + IP + "/update_user.php"
+    result = urllib2.urlopen(url, data)
+
+
+    return redirect(url_for('index'))
+
+
+@app.route('/tune_in', methods=["POST"])
+def tune_in():
+
+    if "tune_in_their_gid" in request.form:
+        tune_in_their_gid = request.form["tune_in_their_gid"]
+        device_id = request.form["device_select"]
+        tune_in_my_gid = request.form["tune_in_my_gid"]
+
+        listener = request.form["listener"]
+        if listener == "anonymous":
+            anonymous = 1
+        else:
+            anonymous = 0
+        url = "http://" + IP + "/start_playback.php"
+        temp_data = urllib.urlencode(
+            {'my_gid': tune_in_my_gid, 'their_gid': tune_in_their_gid, 'device_id': device_id, 'anonymous': anonymous})
+        result = urllib2.urlopen(url, temp_data)
+    return redirect(url_for('index'))
+
+
+@app.route('/tune_out', methods=["POST"])
+def tune_out():
+    if "tune_out_my_gid" in request.form:
+        tune_out_my_gid = request.form["tune_out_my_gid"]
+        url = "http://" + IP + "/stop_playback.php?my_gid=%s" % (tune_out_my_gid)
+        result = urllib2.urlopen(url)
+        return redirect(url_for('index'))
+    return redirect(url_for('index'))
+
+
+@app.route('/logout')
+def logout():
+    # remove the username from the session if it's there
+    session.pop('sid', None)
+    return redirect(url_for('index'))
+
+app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
+
+if __name__ == "__main__":
+    app.run(debug=True,port=PORT)
