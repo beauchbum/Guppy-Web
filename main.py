@@ -1,6 +1,8 @@
 import json
 from flask import Flask, request, redirect, g, render_template, make_response, url_for, session
 import requests
+import requests_toolbelt.adapters.appengine
+
 import base64
 import urllib2
 import urllib
@@ -12,6 +14,9 @@ import json
 # Visit this url to see all the steps, parameters, and expected response.
 
 app = Flask(__name__)
+
+
+requests_toolbelt.adapters.appengine.monkeypatch()
 
 #  Client Keys
 CLIENT_ID = "57b61875218e4e1f8a8d0cdb57a7259b"
