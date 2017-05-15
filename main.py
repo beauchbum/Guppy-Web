@@ -28,9 +28,10 @@ IP = "52.38.141.152"
 ACCESS_TOKEN = ""
 
 # Server-side Parameters
-CLIENT_SIDE_URL = "http://127.0.0.1"
+CLIENT_SIDE_URL = "https://guppy-web.appspot.com"
 PORT = 8000
 REDIRECT_URI = "{}:{}/callback/q".format(CLIENT_SIDE_URL, PORT)
+REDIRECT_URI = CLIENT_SIDE_URL
 #REDIRECT_URI = "sync-me-up://callback"
 SCOPE = "playlist-modify-public playlist-modify-private"
 STATE = ""
