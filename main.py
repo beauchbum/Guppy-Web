@@ -79,6 +79,8 @@ def index():
         if data['success'] == 1:
             user = data['user'][0]
             my_gid = user['guppy_id']
+            session["gid"] = my_gid
+
             my_prof_pic = user['prof_pic']
             listening_gid = user["id"]
             listening = []
@@ -177,7 +179,6 @@ def callback():
     prof_pic = profile_data['images'][0]['url']
 
 
-
     session["sid"] = sid
     url = "http://" + IP + "/create_user.php"
     data = urllib.urlencode({'name': name, 'profile_url':prof_url, 'id':sid, 'prof_pic':prof_pic, 'access_token':access_token, 'refresh_token':refresh_token})
@@ -222,10 +223,10 @@ def tune_out():
     return redirect(url_for('index'))
 
 
-@app.route('/refresh_devices', methods=["POST"])
+@app.route('/refresh_devices', methods=["POST", "GET"])
 def refresh_devices():
-    if "my_gid" in request.form:
-        refresh_my_gid = request.form["my_gid"]
+    if "gid" in session:
+        refresh_my_gid = session["gid"]
         url = "http://" + IP + "/refresh_my_devices.php?gid=%s" % (refresh_my_gid)
         result = urllib2.urlopen(url)
         return redirect(url_for('index'))
