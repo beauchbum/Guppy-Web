@@ -244,7 +244,7 @@
 									</div>
 						 {% endfor %}
 						{% for f in following %}
-							  <a data-toggle="modal" href="#myModal" class="list-group-item list-group-item-action flex-column align-items-start">
+							  <a data-toggle="modal" href="#{{ f.gid }}" class="list-group-item list-group-item-action flex-column align-items-start">
 							  <div style="display:inline-block; vertical-align:top">
 								<img src={{ f.prof_pic }}  height="70" width="70" alt="Smiley face" style="vertical-align: middle">
 								<b>	
@@ -260,7 +260,7 @@
 
 							  </a>
 							  
-							  <div id="myModal" class="modal fade" role="dialog" style="padding-top:40px">
+							  <div id="{{ f.gid }}" class="modal fade" role="dialog" style="padding-top:40px">
 									  <div class="modal-dialog">
 
 										<!-- Modal content-->
