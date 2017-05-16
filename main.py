@@ -100,14 +100,14 @@ def index():
                                       "prof_url": listening_prof_url, "artist": listening_artist,
                                       "song": listening_song})
 
-            '''
+
 
             url = "http://" + IP + "/get_devices.php?gid=%s" % (my_gid)
             result = urllib2.urlopen(url)
             data = json.load(result)
-            '''
 
-            if True:
+
+            if data["success"] == 1:
                 devices = data["devices"]
                 my_name = user['name']
                 url = "http://" + IP + "/get_following.php?current_user_id=%s" % (my_gid)
@@ -188,6 +188,14 @@ def callback():
     result = urllib2.urlopen(url, data)
     url = "http://" + IP + "/update_user.php"
     result = urllib2.urlopen(url, data)
+    url = "http://" + IP + "/get_guppy_id.php?spotify_id=%s" % (session['sid'])
+    result = urllib2.urlopen(url)
+    data = json.load(result)
+    if data['success'] == 1:
+        user = data['user'][0]
+        my_gid = user['guppy_id']
+    url = "http://" + IP + "/refresh_my_devices.php?gid=%s" % (my_gid)
+    result = urllib2.urlopen(url)
 
 
     return redirect(url_for('index'))
