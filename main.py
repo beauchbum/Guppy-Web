@@ -100,11 +100,14 @@ def index():
                                       "prof_url": listening_prof_url, "artist": listening_artist,
                                       "song": listening_song})
 
+            '''
+
             url = "http://" + IP + "/get_devices.php?gid=%s" % (my_gid)
             result = urllib2.urlopen(url)
             data = json.load(result)
+            '''
 
-            if data["success"] == 1:
+            if True:
                 devices = data["devices"]
                 my_name = user['name']
                 url = "http://" + IP + "/get_following.php?current_user_id=%s" % (my_gid)
@@ -241,7 +244,6 @@ def fb_login():
             fb_id = request.form["fbLoginId"]
             url = "http://" + IP + "/set_facebook_account.php?token=%s&fb_id=%s&my_gid=%s" % (fb_token, fb_id, fb_gid)
             result = urllib2.urlopen(url)
-            print result
     return redirect(url_for('index'))
 
 @app.route('/logout')
