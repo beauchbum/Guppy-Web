@@ -109,23 +109,25 @@ def index():
 
             if data["success"] == 1:
                 devices = data["devices"]
-                my_name = user['name']
-                url = "http://" + IP + "/get_following.php?current_user_id=%s" % (my_gid)
-                result = urllib2.urlopen(url)
-                data = json.load(result)
+            else:
+                devices = []
+            my_name = user['name']
+            url = "http://" + IP + "/get_following.php?current_user_id=%s" % (my_gid)
+            result = urllib2.urlopen(url)
+            data = json.load(result)
 
-                if data['success'] == 1:
-                    following = []
-                    users = data['users']
-                    for u in users:
-                        following_gid = u['guppy_id']
-                        if following_gid != listening_gid:
-                            following_name = u['name']
-                            following_prof_pic = u['prof_pic']
-                            following_prof_url = u['prof_url']
-                            following_artist = u['artist']
-                            following_song = u['song']
-                            following.append({"gid":following_gid, "name":following_name, "prof_pic":following_prof_pic, "prof_url":following_prof_url, "artist":following_artist, "song":following_song})
+            if data['success'] == 1:
+                following = []
+                users = data['users']
+                for u in users:
+                    following_gid = u['guppy_id']
+                    if following_gid != listening_gid:
+                        following_name = u['name']
+                        following_prof_pic = u['prof_pic']
+                        following_prof_url = u['prof_url']
+                        following_artist = u['artist']
+                        following_song = u['song']
+                        following.append({"gid":following_gid, "name":following_name, "prof_pic":following_prof_pic, "prof_url":following_prof_url, "artist":following_artist, "song":following_song})
         return render_template("index.html", logged=True, following=following, my_name=my_name, my_gid = my_gid, my_prof_pic=my_prof_pic, devices=devices, listening=listening)
     else:
         following = []
