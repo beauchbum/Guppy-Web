@@ -60,7 +60,7 @@
 	   		var accessToken = response.authResponse.accessToken;
 	   		var xmlHttp = new XMLHttpRequest();
 	    	xmlHttp.open( "GET", "http://52.38.141.152/set_facebook_account.php?token=accessToken",true); // false for synchronous request"
-	    	request.send(null);
+	    	xmlHttp.send(null);
 
 			}
 		});
