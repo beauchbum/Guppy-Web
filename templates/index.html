@@ -59,8 +59,7 @@
   		if (response.status === 'connected') {
 	   		var accessToken = response.authResponse.accessToken;
 	   		var xmlHttp = new XMLHttpRequest();
-	    	xmlHttp.open( "GET", "http://52.38.141.152/set_facebook_account.php?token=accessToken", false ); // false for synchronous request"
-	       	xmlHttp.send( null );
+	    	xmlHttp.open( "GET", "http://52.38.141.152/set_facebook_account.php?token=accessToken",true); // false for synchronous request"
 
 			}
 		});
