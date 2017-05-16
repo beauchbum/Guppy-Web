@@ -232,6 +232,14 @@ def refresh_devices():
         return redirect(url_for('index'))
     return redirect(url_for('index'))
 
+@app.route('/fb_login', methods=["POST", "GET"])
+def fb_login():
+    if "fbLoginToken" in request.form:
+        print request.form["fbLoginToken"]
+        url = "http://" + IP + "/set_facebook_account.php?token=test"
+        result = urllib2.urlopen(url)
+        print result
+    return redirect(url_for('index'))
 
 @app.route('/logout')
 def logout():
