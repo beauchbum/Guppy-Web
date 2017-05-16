@@ -181,7 +181,10 @@ def callback():
     sid = profile_data['id']
     name = profile_data['display_name']
     prof_url = profile_data['external_urls']['spotify']
-    prof_pic = profile_data['images'][0]['url']
+    try:
+        prof_pic = profile_data['images'][0]['url']
+    except IndexError:
+        prof_pic = ""
 
 
     session["sid"] = sid
