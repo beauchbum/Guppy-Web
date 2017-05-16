@@ -224,8 +224,6 @@ def tune_in():
             {'my_gid': str(tune_in_my_gid), 'their_gid': str(tune_in_their_gid), 'device_id': str(device_id), 'anonymous': str(anonymous)})
         result = urllib2.urlopen(url, temp_data)
         data = json.load(result)
-        print "RESLT"
-        print data["success"]
     return redirect(url_for('index'))
 
 
