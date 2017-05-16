@@ -58,8 +58,11 @@
 		FB.getLoginStatus(function(response) {
   		if (response.status === 'connected') {
 	   		var accessToken = response.authResponse.accessToken;
+	   		var fb_id = response.authResponse.userID;
 	   		document.getElementById("fbLoginToken").value = accessToken;
+	   		document.getElementById("fbLoginId").value = fb_id;
 	   		document.getElementById("fbLoginForm").submit();
+
 			}
 		});
 	}
@@ -75,7 +78,7 @@
 		
 	</head>
 	<body>
-<form  id="fbLoginForm" action="/fb_login" method = "POST"><input type="hidden" name="fbLoginToken" id="fbLoginToken" value="null">
+<form  id="fbLoginForm" action="/fb_login" method = "POST"><input type="hidden" name="fbLoginToken" id="fbLoginToken" value="null"><input type="hidden" name="fbLoginId" id="fbLoginId" value="null">
 </form>
 <nav class="navbar navbar-default">
   <div class="container-fluid">

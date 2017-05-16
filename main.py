@@ -235,10 +235,13 @@ def refresh_devices():
 @app.route('/fb_login', methods=["POST", "GET"])
 def fb_login():
     if "fbLoginToken" in request.form:
-        print request.form["fbLoginToken"]
-        url = "http://" + IP + "/set_facebook_account.php?token=test"
-        result = urllib2.urlopen(url)
-        print result
+        if "gid" in session:
+            fb_gid = session["gid"]
+            fb_token = request.form["fbLoginToken"]
+            fb_id = request.form["fbLoginId"]
+            url = "http://" + IP + "/set_facebook_account.php?token=%s&fb_id=%s&my_gid=%s" % (fb_token, fb_id, fb_gid)
+            result = urllib2.urlopen(url)
+            print result
     return redirect(url_for('index'))
 
 @app.route('/logout')
