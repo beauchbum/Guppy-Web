@@ -162,7 +162,7 @@
 						
 						{% for l in listening %}
 							  <a data-toggle="modal" href="#myModal" class="list-group-item list-group-item-action flex-column align-items-start active">
-							  <div style="display:inline-block; vertical-align:top">
+							  <div style="display:inline-block; vertical-align:top; white-space:nowrap; text-overflow: ellipsis; overflow: hidden;">
 								<img src={{ l.prof_pic }}  height="70" width="70" style="vertical-align: middle">
 								<b>	
 								</div>
@@ -216,17 +216,16 @@
 						 {% endfor %}
 						{% for f in following %}
 							  <a data-toggle="modal" href="#{{ f.gid }}" class="list-group-item list-group-item-action flex-column align-items-start">
-							  <div style="display:inline-block; vertical-align:top">
+							  <div style="display:inline-block; vertical-align:top; white-space:nowrap; text-overflow: ellipsis; overflow: hidden;">
 								<img src={{ f.prof_pic }}  height="70" width="70" style="vertical-align: middle">
 								<b>	
 								</div>
 								<div style="display:inline-block;vertical-align:middle">
-								<span style="font-size: 1.5em; padding-left: 10px; vertical-align: top;">{{ f.name }}</span>
+								<span overflow=hidden style="font-size: 1.5em; padding-left: 10px; vertical-align: top;">{{ f.name }}</span>
 								<br>
-								<span style="padding-left:15px; vertical-align: bottom;">{{ f.song }} by {{f.artist}}</span>
+								<span overflow=hidden style="padding-left:15px; vertical-align: bottom;">{{ f.song }} by {{f.artist}}</span>
 								</b>
 								</div>
-								<span style="vertical-align:top; float:right;"> TEST </span>
 
 
 							  </a>
