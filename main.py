@@ -15,7 +15,9 @@ import os
 # Visit this url to see all the steps, parameters, and expected response.
 
 app = Flask(__name__)
-
+app.config.update(
+    SEND_FILE_MAX_AGE_DEFAULT=3600
+)
 
 
 #  Client Keys
