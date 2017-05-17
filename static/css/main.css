@@ -59,6 +59,24 @@
 
 /* Containers */
 
+	#parent {
+	  height:8vh;
+	}
+	#colLeft {
+	  height:8vh;
+	  float: left;
+	}
+	#colwrap{
+	    overflow:hidden;
+	}
+	#colCenter {
+	  height:8vh;
+	}
+	#colRight {
+	  height:8vh;
+	  float: right;
+	}
+
 
 
 	.container {

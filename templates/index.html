@@ -215,19 +215,21 @@
 									</div>
 						 {% endfor %}
 						{% for f in following %}
-							  <a data-toggle="modal" href="#{{ f.gid }}" class="list-group-item list-group-item-action flex-column align-items-start">
-							  <div style="display:inline-block; vertical-align:top; white-space:nowrap; text-overflow: ellipsis; overflow: hidden;">
-								<img src={{ f.prof_pic }}  height="70" width="70" style="vertical-align: middle">
-								<b>	
-								</div>
-								<div style="display:inline-block;vertical-align:middle">
-								<span overflow=hidden style="font-size: 1.5em; padding-left: 10px; vertical-align: top;">{{ f.name }}</span>
-								<br>
-								<span overflow=hidden style="padding-left:15px; vertical-align: bottom;">{{ f.song }} by {{f.artist}}</span>
-								</b>
-								</div>
+							<a data-toggle="modal" href="#{{ f.gid }}" class="list-group-item list-group-item-action flex-column align-items-start">
+								<div id="parent" style="width:100%">  
+								  <div id="colLeft">								
+								  	<img src={{ f.prof_pic }}  height="70" width="70" style="vertical-align: middle">
+								  </div>
+								    <div id="colwrap">
+								      <div id="colRight">TEST</div>
+								      <div id="colCenter">
+										<div style="font-size: 1.5em; padding-left:10px; vertical-align: top;">{{ f.name }}</div>
+										
+										<div style="font-size: 1.0em; padding-left:15px; vertical-align: bottom;">{{ f.song }} by {{f.artist}}</div>
 
-
+								      </div>  
+								    </div>
+								</div>							
 							  </a>
 							  
 							  <div id="{{ f.gid }}" class="modal fade" role="dialog" style="padding-top:40px">
