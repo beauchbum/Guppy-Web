@@ -163,17 +163,20 @@
 						{% for l in listening %}
 							  <a data-toggle="modal" href="#myModal" class="list-group-item list-group-item-action flex-column align-items-start active">
 							  <div style="display:inline-block; vertical-align:top; white-space:nowrap; text-overflow: ellipsis; overflow: hidden;">
-								<img src={{ l.prof_pic }}  height="70" width="70" style="vertical-align: middle">
-								<b>	
-								</div>
-								<div style="display:inline-block;vertical-align:middle">
-								<span style="color:white; font-size: 1.5em; padding-left: 10px; vertical-align: top;">{{ l.name }}</span>
-								<br>
-								<span style="color:white; padding-left:15px; vertical-align: bottom;">{{ l.song }} by {{l.artist}}</span>
-								</b>
-								</div>
-								<span style="vertical-align:top; float:right;"> TEST </span>
+								<div id="parent" style="width:100%">  
+								  <div id="colLeft">								
+								  	<img src={{ l.prof_pic }}  height="70" width="70" style="vertical-align: middle">
+								  </div>
+								    <div id="colwrap">
+								      <div style="color:white; id="colRight">TEST</div>
+								      <div id="colCenter">
+										<div style="color: white; font-size: 1.5em; padding-left:10px; vertical-align: top;">{{ l.name }}</div>
+										
+										<div style="color: white; font-size: 1.0em; padding-left:15px; vertical-align: bottom;">{{ l.song }} by {{l.artist}}</div>
 
+								      </div>  
+								    </div>
+								</div>	
 
 							  </a>
 							  
