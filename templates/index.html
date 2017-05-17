@@ -162,21 +162,26 @@
 						
 						{% for l in listening %}
 							  <a data-toggle="modal" href="#myModal" class="list-group-item list-group-item-action flex-column align-items-start active">
-							  <div style="display:inline-block; vertical-align:top; white-space:nowrap; text-overflow: ellipsis; overflow: hidden;">
 								<div id="parent" style="width:100%">  
 								  <div id="colLeft">								
-								  	<img src={{ l.prof_pic }}  height="70" width="70" style="vertical-align: middle">
+								  	<img src={{ l.prof_pic }} style="vertical-align: middle; height:100%; width:100%;">
 								  </div>
 								    <div id="colwrap">
-								      <div style="color:white; id="colRight">TEST</div>
+								      <div id="colRight">
+								      {% if l.playing == 1 %}
+								      	<img src="/static/images/green.gif" style="border:none; display:block; margin:0 auto; height:30%; width:30%;">
+								     {% elif l.playing == 0 %}
+								      	Inactive
+								      {% endif %}
+								      </div>
 								      <div id="colCenter">
-										<div style="color: white; font-size: 1.5em; padding-left:10px; vertical-align: top;">{{ l.name }}</div>
+										<div style="font-size: 1.5em; padding-left:10px; vertical-align: top;">{{ l.name }}</div>
 										
-										<div style="color: white; font-size: 1.0em; padding-left:15px; vertical-align: bottom;">{{ l.song }} by {{l.artist}}</div>
+										<div style="font-size: 1.0em; padding-left:15px; vertical-align: bottom;">{{ l.song }} by {{l.artist}}</div>
 
 								      </div>  
 								    </div>
-								</div>	
+								</div>		
 
 							  </a>
 							  
@@ -188,9 +193,15 @@
 										  <div class="modal-header">
 										 
 											<h4 class="modal-title">
-												{{ l.name }} - 
-												<font face="verdana" color="green">Active</font>
-												<button type="button" class="close" data-dismiss="modal">&times;</button>
+												{% if l.playing == 1 %}
+													{{ l.name }} - 
+													<font face="verdana" color="green">Active</font>
+													<button type="button" class="close" data-dismiss="modal">&times;</button>
+												{% elif l.playing == 0 %}
+													{{ l.name }} - 
+													<font face="verdana" color="red">Inactive</font>
+													<button type="button" class="close" data-dismiss="modal">&times;</button>
+												{% endif %}
 											</h4>
 											
 
@@ -224,7 +235,14 @@
 								  	<img src={{ f.prof_pic }} style="vertical-align: middle; height:100%; width:100%;">
 								  </div>
 								    <div id="colwrap">
-								      <div id="colRight">TEST</div>
+								      <div id="colRight">
+								      {% if f.playing == 1 %}
+								      	<img src="/static/images/green.gif" style="border:none; display:block; margin:0 auto; height:30%; width:30%;">
+								      {% elif f.playing == 0 %}
+								      	Inactive
+								      {% endif %}
+
+								      </div>
 								      <div id="colCenter">
 										<div style="font-size: 1.5em; padding-left:10px; vertical-align: top;">{{ f.name }}</div>
 										
@@ -243,9 +261,15 @@
 										  <div class="modal-header">
 										 
 											<h4 class="modal-title">
+											{% if f.playing == 1 %}
 												{{ f.name }} - 
 												<font face="verdana" color="green">Active</font>
 												<button type="button" class="close" data-dismiss="modal">&times;</button>
+											{% elif f.playing == 0 %}
+												{{ f.name }} - 
+												<font face="verdana" color="red">Inactive</font>
+												<button type="button" class="close" data-dismiss="modal">&times;</button>
+											{% endif %}
 											</h4>
 											
 

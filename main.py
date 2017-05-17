@@ -98,9 +98,10 @@ def index():
                     listening_prof_url = u['prof_url']
                     listening_artist = u['artist']
                     listening_song = u['song']
+                    listening_playing = int(u['playing'])
                     listening.append({"gid": listening_gid, "name": listening_name, "prof_pic": listening_prof_pic,
                                       "prof_url": listening_prof_url, "artist": listening_artist,
-                                      "song": listening_song})
+                                      "song": listening_song, "playing":listening_playing})
 
 
 
@@ -129,7 +130,8 @@ def index():
                         following_prof_url = u['prof_url']
                         following_artist = u['artist']
                         following_song = u['song']
-                        following.append({"gid":following_gid, "name":following_name, "prof_pic":following_prof_pic, "prof_url":following_prof_url, "artist":following_artist, "song":following_song})
+                        following_playing = int(u["playing"])
+                        following.append({"gid":following_gid, "name":following_name, "prof_pic":following_prof_pic, "prof_url":following_prof_url, "artist":following_artist, "song":following_song, "playing":following_playing})
         return render_template("index.html", logged=True, following=following, my_name=my_name, my_gid = my_gid, my_prof_pic=my_prof_pic, devices=devices, listening=listening, fb_token_valid=fb_token_valid)
     else:
         following = []
