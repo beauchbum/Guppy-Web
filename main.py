@@ -80,7 +80,7 @@ def index():
             user = data['user'][0]
             my_gid = user['guppy_id']
             session["gid"] = my_gid
-
+            fb_token_valid = int(user['fb_token_valid'])
             my_prof_pic = user['prof_pic']
             listening_gid = user["id"]
             listening = []
@@ -128,7 +128,7 @@ def index():
                         following_artist = u['artist']
                         following_song = u['song']
                         following.append({"gid":following_gid, "name":following_name, "prof_pic":following_prof_pic, "prof_url":following_prof_url, "artist":following_artist, "song":following_song})
-        return render_template("index.html", logged=True, following=following, my_name=my_name, my_gid = my_gid, my_prof_pic=my_prof_pic, devices=devices, listening=listening)
+        return render_template("index.html", logged=True, following=following, my_name=my_name, my_gid = my_gid, my_prof_pic=my_prof_pic, devices=devices, listening=listening, fb_token_valid=fb_token_valid)
     else:
         following = []
         my_devices = []
@@ -233,7 +233,6 @@ def tune_out():
         tune_out_my_gid = request.form["tune_out_my_gid"]
         url = "http://" + IP + "/stop_playback.php?my_gid=%s" % (tune_out_my_gid)
         result = urllib2.urlopen(url)
-        return redirect(url_for('index'))
     return redirect(url_for('index'))
 
 
@@ -243,8 +242,16 @@ def refresh_devices():
         refresh_my_gid = session["gid"]
         url = "http://" + IP + "/refresh_my_devices.php?gid=%s" % (refresh_my_gid)
         result = urllib2.urlopen(url)
-        return redirect(url_for('index'))
     return redirect(url_for('index'))
+
+@app.route('/refresh_fb_friends', methods=["POST", "GET"])
+def refresh_fb_friends():
+    if "gid" in session:
+        refresh_fb_gid = session["gid"]
+        url = "http://" + IP + "/update_my_fb_friends.php?gid=%s" % (refresh_fb_gid)
+        result = urllib2.urlopen(url)
+    return redirect(url_for('index'))
+
 
 @app.route('/fb_login', methods=["POST", "GET"])
 def fb_login():

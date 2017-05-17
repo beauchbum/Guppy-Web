@@ -102,8 +102,8 @@
         </div>
 
         <button type="submit" class="btn btn-default">Submit</button>
-        {% if logged==true %}
-	<div class="fb-login-button" data-max-rows="1" data-size="medium" data-button-type="continue_with" data-show-faces="false" data-auto-logout-link=true data-use-continue-as="false" data-scope="public_profile,user_friends" onlogin="onFacebookLogin()"></div>
+        {% if logged==true and fb_token_valid==0 %}
+			<div class="fb-login-button" data-max-rows="1" data-size="medium" data-button-type="continue_with" data-show-faces="false" data-auto-logout-link=false data-use-continue-as="false" data-scope="public_profile,user_friends" onlogin="onFacebookLogin()"></div>
 		{% endif %}
       </form>
       <ul class="nav navbar-nav navbar-right">
@@ -112,12 +112,18 @@
 
 	    {% else %}
 	    <li><a href="/logout">Logout</a></li>
+
 	        <li class="dropdown">
 	          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Other Actions <span class="caret"></span></a>
 	          <ul class="dropdown-menu">
 	            <li>
 		            <a href="/refresh_devices">Refresh Devices</a>
 		        </li>
+		        {% if fb_token_valid==1 %}
+		        <li>
+		        	<a href="/refresh_fb_friends">Find Facebook Friends</a>
+		        </li>
+		        {% endif %}
 	            <li><a href="#">Deactivate Account</a></li>
 
 	          </ul>
@@ -127,41 +133,6 @@
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
-			<!-- Header
-				<header id="header">
-					<nav id="nav">
-						<ul>
-							{% if logged==false %}
-								<li><a href="/authorize" class="button">Login</a></li>
-							{% else %}
-								<form name="refresh_devices" action="/refresh_devices" method = "POST"><input type="hidden" name="my_gid" value={{ my_gid }}>
-								<li><button style="display: inline-block;" type="submit" class="btn btn-primary"> Refresh Devices</button></li>
-								</form>
-								<li><img src={{ my_prof_pic }} class="img-circle" height="50" width="50" alt="Smiley face" style="vertical-align:middle"></li>
-								<li><a href="/logout" class="button">Logout</a></li>
-
-
-							{% endif %}
-
-							
-						</ul>
-					</nav>
-				</header>
-			-->
-			<!--
-				<section id="banner">
-					
-					<img src="/static/images/logo_cropped.png" class="img-circle" alt="Cinque Terre" width="250" height="250"> 					
-					<h2>Guppy</h2>
-					<p>Web Application for sharing music</p>
-					<ul class="actions">
-						{% if logged == false %}
-						<li><a href="/authorize" class="button special">Connect to Spotify</a></li>
-						{% endif %}
-						<li><a href="#" class="button">Learn More</a></li>
-					</ul>
-				</section>
-			-->
 
 			<!-- Main -->
 				<section id="main" class="container">
@@ -192,7 +163,7 @@
 						{% for l in listening %}
 							  <a data-toggle="modal" href="#myModal" class="list-group-item list-group-item-action flex-column align-items-start active">
 							  <div style="display:inline-block; vertical-align:top">
-								<img src={{ l.prof_pic }}  height="70" width="70" alt="Smiley face" style="vertical-align: middle">
+								<img src={{ l.prof_pic }}  height="70" width="70" style="vertical-align: middle">
 								<b>	
 								</div>
 								<div style="display:inline-block;vertical-align:middle">
@@ -222,7 +193,7 @@
 
 										  </div>
 										  <div class="modal-body">
-											<img src={{ l.prof_pic }} class="img-circle" height="90" width="90" alt="Smiley face" style="vertical-align: middle">
+											<img src={{ l.prof_pic }} class="img-circle" height="90" width="90" style="vertical-align: middle">
 											<input type="checkbox" data-width="120" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" style="padding-left:20px">
 										  </div>	
 										  <div class="modal-footer">
@@ -246,7 +217,7 @@
 						{% for f in following %}
 							  <a data-toggle="modal" href="#{{ f.gid }}" class="list-group-item list-group-item-action flex-column align-items-start">
 							  <div style="display:inline-block; vertical-align:top">
-								<img src={{ f.prof_pic }}  height="70" width="70" alt="Smiley face" style="vertical-align: middle">
+								<img src={{ f.prof_pic }}  height="70" width="70" style="vertical-align: middle">
 								<b>	
 								</div>
 								<div style="display:inline-block;vertical-align:middle">
@@ -276,7 +247,7 @@
 
 										  </div>
 										  <div class="modal-body">
-											<img src={{ f.prof_pic }} class="img-circle" height="90" width="90" alt="Smiley face" style="vertical-align: middle">
+											<img src={{ f.prof_pic }} class="img-circle" height="90" width="90" style="vertical-align: middle">
 											<input type="checkbox" data-width="120" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" style="padding-left:20px">
 										  </div>
 										  <div class="modal-footer">
