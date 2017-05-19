@@ -44,7 +44,7 @@ else:
     PORT = 8000
     REDIRECT_URI = "{}:{}/callback/q".format(CLIENT_SIDE_URL, PORT)
 #REDIRECT_URI = "sync-me-up://callback"
-SCOPE = "playlist-modify-public playlist-modify-private user-read-playback-state user-modify-playback-state"
+SCOPE = "playlist-modify-public playlist-modify-private user-read-playback-state user-modify-playback-state user-read-recently-played"
 STATE = ""
 SHOW_DIALOG_bool = True
 SHOW_DIALOG_str = str(SHOW_DIALOG_bool).lower()
