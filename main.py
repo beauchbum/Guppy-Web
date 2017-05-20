@@ -1,5 +1,5 @@
 import json
-from flask import Flask, request, redirect, g, render_template, make_response, url_for, session
+from flask import Flask, request, redirect, g, render_template, make_response, url_for, session, flash
 import requests
 import requests_toolbelt.adapters.appengine
 
@@ -228,6 +228,10 @@ def tune_in():
             {'my_gid': str(tune_in_my_gid), 'their_gid': str(tune_in_their_gid), 'device_id': str(device_id), 'anonymous': str(anonymous)})
         result = urllib2.urlopen(url, temp_data)
         data = json.load(result)
+        if data["success"] == 0:
+            if data["error"] == 404:
+                flash(u'Sorry that device is no longer active', category='danger')
+
     return redirect(url_for('index'))
 
 

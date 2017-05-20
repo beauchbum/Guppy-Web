@@ -1,4 +1,8 @@
+{% block body %}
+
 <!DOCTYPE HTML>
+
+
 <!--
 	Alpha by HTML5 UP
 	html5up.net | @ajlkn
@@ -145,22 +149,35 @@
 						{% else %}
 							<h2 align="center">Your Friends</h2>
 							{% if fb_token_valid==1 %}
-							<h4 align="center" style="margin-bottom: 0px;">Looking for more? <a href="/refresh_fb_friends">Refresh Facebook Friends</a>
+							<h4 align="center" style="margin-bottom: 10px;">Looking for more? <a href="/refresh_fb_friends">Refresh Facebook Friends</a>
 							</h4>
 							{% else %}
-								<h4 align="center" style="margin-bottom: 0px;">Looking for more?</h4>
+								<h4 align="center" style="margin-bottom: 10px;">Looking for more?</h4>
 								<div id="wrapper" style="text-align: center">    
 								    <div class="fb-login-button" data-max-rows="1" data-size="medium" data-button-type="continue_with" data-show-faces="false" data-auto-logout-link=false data-use-continue-as="false" data-scope="public_profile,user_friends" onlogin="onFacebookLogin()"></div>
 									</div>
-							{% endif %}>
+							{% endif %}
 						{% endif %}
+
 					</header>
-					<!-- </section> -->
+
+					{% with messages = get_flashed_messages(with_categories=true) %}
+					  <!-- Categories: success (green), info (blue), warning (yellow), danger (red) -->
+					  {% if messages %}
+					    {% for category, message in messages %}
+					      <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+					      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					      <!-- <strong>Title</strong> --> {{ message }}
+					      </div>
+					    {% endfor %}
+					  {% endif %}
+					{% endwith %}
+										<!-- </section> -->
 						
-						<div class="list-group" style="max-height:500px; overflow: auto">
+						<div class="list-group" style="max-height:40vh; overflow: auto">
 						
 						{% for l in listening %}
-							  <a data-toggle="modal" href="#myModal" class="list-group-item list-group-item-action flex-column align-items-start active">
+							  <a data-toggle="modal" href="#myModal" class="list-group-item list-group-item-action flex-column align-items-start active" style="background-color: #79C3F7; border-color: #79C3F7;">
 								<div id="parent" style="width:100%">  
 								  <div id="colLeft">								
 								  	<img src={{ l.prof_pic }} style="vertical-align: middle; height:100%; width:100%;">
@@ -174,9 +191,9 @@
 								      {% endif %}
 								      </div>
 								      <div id="colCenter">
-										<div style="font-size: 1.5em; padding-left:10px; vertical-align: top;">{{ l.name }}</div>
+										<div style="color: black;font-size: 1.5em; padding-left:10px; vertical-align: top;">{{ l.name }}</div>
 										
-										<div style="font-size: 1.0em; padding-left:15px; vertical-align: bottom;">{{ l.song }} by {{l.artist}}</div>
+										<div style="color: black; font-size: 1.0em; padding-left:15px; vertical-align: bottom;">{{ l.song }} by {{l.artist}}</div>
 
 								      </div>  
 								    </div>
@@ -274,13 +291,13 @@
 
 										  </div>
 										  <div class="modal-body">
-											<img src={{ f.prof_pic }} class="img-circle" height="90" width="90" style="vertical-align: middle">
-											<input type="checkbox" data-width="120" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" style="padding-left:20px">
+											<img src={{ f.prof_pic }} class="img-circle" height="15%" width="15%" style="vertical-align: middle">
+											<input type="checkbox" data-width="25%" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" style="padding-left:20px">
 										  </div>
 										  <div class="modal-footer">
 											<div class="form-group row"> 
 
-											  <div class="col-md-5" >
+											  <div>
 											  <form name="tune_form" action="/tune_in" method = "POST" onsubmit="return validateForm(this)"><input type="hidden" name="tune_in_their_gid" value={{ f.gid }}><input type="hidden" name="tune_in_my_gid" value={{ my_gid }}>
 											   <select class="form-control" name="device_select" required>
 													<option hidden value="no device" >Select Device</option>
@@ -290,7 +307,7 @@
 												</select>
 											  </div>
 											  
-											<div class="col-md-4">
+											<div>
 											   <select class="form-control" name="listener" required>
 											   		<option value = {{ my_name }}> As {{ my_name }}</option>											
 													<option value = "anonymous"> Anonymous </option>
@@ -299,7 +316,7 @@
 											</div>
 
 
-											  <div class="col-md-3">
+											  <div>
 												<span><button type="submit" class="btn btn-primary"> Tune In</button></span>
 											  </div>
 											  
@@ -417,3 +434,5 @@
 
 	</body>
 </html>
+
+{% endblock %}
