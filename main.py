@@ -131,7 +131,14 @@ def index():
                         following_artist = u['artist']
                         following_song = u['song']
                         following_playing = int(u["playing"])
-                        following.append({"gid":following_gid, "name":following_name, "prof_pic":following_prof_pic, "prof_url":following_prof_url, "artist":following_artist, "song":following_song, "playing":following_playing})
+                        following_listening_id = u["listening_id"]
+                        following_listening_status = 0
+                        if following_listening_id is not None:
+                            following_listening_status = 1
+                        following_listening_name =u["listening_name"]
+                        following_listening_prof = u["listening_prof"]
+                        following.append({"gid":following_gid, "name":following_name, "prof_pic":following_prof_pic, "prof_url":following_prof_url, "artist":following_artist, "song":following_song, "playing":following_playing,
+                                          "listening_status": following_listening_status, "listening_id": following_listening_id, "listening_name":following_listening_name, "listening_prof":following_listening_prof})
         return render_template("index.html", logged=True, following=following, my_name=my_name, my_gid = my_gid, my_prof_pic=my_prof_pic, devices=devices, listening=listening, fb_token_valid=fb_token_valid)
     else:
         following = []
@@ -225,8 +232,11 @@ def tune_in():
         result = urllib2.urlopen(url, temp_data)
         data = json.load(result)
         if data["success"] == 0:
+
             if data["error"] == 404:
                 flash(u'Sorry that device is no longer active', category='danger')
+            else:
+                print "ERROR TUNING IN" + str(data["error"])
 
     return redirect(url_for('index'))
 

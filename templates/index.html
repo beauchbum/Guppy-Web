@@ -252,7 +252,9 @@
 								  </div>
 								    <div id="colwrap">
 								      <div id="colRight">
-								      {% if f.playing == 1 %}
+								      {% if f.listening_status == 1 %}
+								      	<img src={{ f.listening_prof }} class="img-circle" style="border:none; display:block; margin:0 auto; height:50%; width:50%;"">
+									  {% elif f.playing == 1 %}
 								      	<img src="/static/images/green.gif" style="border:none; display:block; margin:0 auto; height:30%; width:30%;">
 								      {% elif f.playing == 0 %}
 								      	Inactive
@@ -277,7 +279,11 @@
 										  <div class="modal-header">
 										 
 											<h4 class="modal-title">
-											{% if f.playing == 1 %}
+											{% if f.listening_status == 1 %}
+												{{ f.name }} Listening to 
+												<font face="verdana" color="green">{{ f.listening_name }}</font>
+												<button type="button" class="close" data-dismiss="modal">&times;</button>
+											{% elif f.playing == 1 %}
 												{{ f.name }} - 
 												<font face="verdana" color="green">Active</font>
 												<button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -293,6 +299,10 @@
 										  <div class="modal-body">
 											<img src={{ f.prof_pic }} class="img-circle" height="15%" width="15%" style="vertical-align: middle">
 											<input type="checkbox" data-width="25%" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" style="padding-left:20px">
+											{% if f.listening_status == 1 %}
+											<img src={{ f.listening_prof }} class="img-circle" height="15%" width="15%" style="vertical-align: middle">
+											<input type="checkbox" data-width="25%" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" style="padding-left:20px">
+											{% endif %}
 										  </div>
 										  <div class="modal-footer">
 										 	 <form class="form-inline" name="tune_form" action="/tune_in" method = "POST" onsubmit="return validateForm(this)"><input type="hidden" name="tune_in_their_gid" value={{ f.gid }}><input type="hidden" name="tune_in_my_gid" value={{ my_gid }}>
@@ -312,12 +322,12 @@
 												  -->
 
 												    <label class="btn">
-											          <input type="checkbox" hidden name='anonymous'><i class="fa fa-square-o fa-2x"></i><i class="fa fa-check-square-o fa-2x"></i><span> Anonymous?</span>
+											          <input type="checkbox" hidden name='anonymous'><i class="fa fa-square-o fa-2x"></i><i class="fa fa-check-square-o fa-2x"></i><span style="font-size: 1.2em;"> Anonymous?</span>
 											        </label>
 
   
 
-												  <button type="submit" class="btn btn-primary">Tune In</button>
+												  <button type="submit" class="btn btn-primary" style="font-size:1.0em;">Tune In</button>
 												</form>
 
 												 <span style="float:left"> Don't see your device? Try <a href="/refresh_devices">refreshing</a></span>
