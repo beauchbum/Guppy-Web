@@ -218,11 +218,7 @@ def tune_in():
         device_id = request.form["device_select"]
         tune_in_my_gid = request.form["tune_in_my_gid"]
 
-        listener = request.form["listener"]
-        if listener == "anonymous":
-            anonymous = 1
-        else:
-            anonymous = 0
+        anonymous = 0
         url = "http://" + IP + "/start_playback.php"
         temp_data = urllib.urlencode(
             {'my_gid': str(tune_in_my_gid), 'their_gid': str(tune_in_their_gid), 'device_id': str(device_id), 'anonymous': str(anonymous)})

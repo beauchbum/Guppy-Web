@@ -295,33 +295,61 @@
 											<input type="checkbox" data-width="25%" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" style="padding-left:20px">
 										  </div>
 										  <div class="modal-footer">
-											<div class="form-group row"> 
-
-											  <div>
-											  <form name="tune_form" action="/tune_in" method = "POST" onsubmit="return validateForm(this)"><input type="hidden" name="tune_in_their_gid" value={{ f.gid }}><input type="hidden" name="tune_in_my_gid" value={{ my_gid }}>
-											   <select class="form-control" name="device_select" required>
+										 	 <form class="form-inline" name="tune_form" action="/tune_in" method = "POST" onsubmit="return validateForm(this)"><input type="hidden" name="tune_in_their_gid" value={{ f.gid }}><input type="hidden" name="tune_in_my_gid" value={{ my_gid }}>
+												  <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect" name="device_select" required>
 													<option hidden value="no device" >Select Device</option>
 													{% for d in devices %}
 													<option value = {{ d.device_id }}>{{ d.device_name }} </option>
 													{% endfor %}
-												</select>
-											  </div>
+												  </select>
+
+												  <span> Don't see your device? Try <a href="/refresh_devices">refreshing</a></span>
+												  <!--	
+												  <label class="custom-control custom-checkbox mb-2 mr-sm-2 mb-sm-0">
+												    <input type="checkbox" class="custom-control-input">
+												    <span class="custom-control-indicator"></span>
+												    <span class="custom-control-description">Anonymous</span>
+												  </label>
+												  -->
+
+												    <label class="btn">
+											          <input type="checkbox" hidden name='anonymous'><i class="fa fa-square-o fa-2x"></i><i class="fa fa-check-square-o fa-2x"></i><span> Anonymous?</span>
+											        </label>
+
+  
+
+												  <button type="submit" class="btn btn-primary">Tune In</button>
+												</form>
+
+
+										  <!--
+												<div class="form-group row"> 
+											  		<div>		
+											  			<form name="tune_form" action="/tune_in" method = "POST" onsubmit="return validateForm(this)"><input type="hidden" name="tune_in_their_gid" value={{ f.gid }}><input type="hidden" name="tune_in_my_gid" value={{ my_gid }}>
+												   		<select class="form-control" name="device_select" required>
+															<option hidden value="no device" >Select Device</option>
+															{% for d in devices %}
+															<option value = {{ d.device_id }}>{{ d.device_name }} </option>
+															{% endfor %}
+														</select>
+											  		</div>
 											  
-											<div>
-											   <select class="form-control" name="listener" required>
-											   		<option value = {{ my_name }}> As {{ my_name }}</option>											
-													<option value = "anonymous"> Anonymous </option>
-												</select>
+													<div>
+												   		<select class="form-control" name="listener" required>
+												   			<option value = {{ my_name }}> As {{ my_name }}</option>									
+															<option value = "anonymous"> Anonymous </option>
+														</select>
 												 
-											</div>
-
-
-											  <div>
-												<span><button type="submit" class="btn btn-primary"> Tune In</button></span>
-											  </div>
+													</div>
+											 	 <div>
+												
+													<span><button type="submit" class="btn btn-primary"> Tune In</button></span>
+											  	</div>
 											  
 											  </form>
+
 											</div>
+											-->
 										  </div>
 										</div>
 
