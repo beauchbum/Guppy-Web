@@ -280,7 +280,7 @@
 										 
 											<h4 class="modal-title">
 											{% if f.listening_status == 1 %}
-												{{ f.name }} Listening to 
+												{{ f.name }} listening to 
 												<font face="verdana" color="green">{{ f.listening_name }}</font>
 												<button type="button" class="close" data-dismiss="modal">&times;</button>
 											{% elif f.playing == 1 %}
@@ -300,6 +300,8 @@
 											<img src={{ f.prof_pic }} class="img-circle" height="15%" width="15%" style="vertical-align: middle">
 											<input type="checkbox" data-width="25%" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" style="padding-left:20px">
 											{% if f.listening_status == 1 %}
+											<span class="glyphicon glyphicon-arrow-right" aria-hidden="true" style="font-size: 3.0em; vertical-align: middle"></span>
+
 											<img src={{ f.listening_prof }} class="img-circle" height="15%" width="15%" style="vertical-align: middle">
 											<input type="checkbox" data-width="25%" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" style="padding-left:20px">
 											{% endif %}
@@ -326,11 +328,14 @@
 											        </label>
 
   
-
-												  <button type="submit" class="btn btn-primary" style="font-size:1.0em;">Tune In</button>
+												{% if f.listening_status == 1 %}
+												  	<button type="submit" class="btn btn-primary" style="font-size:1.0em;">Join</button>
+												{% else %}
+													<button type="submit" class="btn btn-primary" style="font-size:1.0em;">Tune In</button>
+												{% endif %}
 												</form>
 
-												 <span style="float:left"> Don't see your device? Try <a href="/refresh_devices">refreshing</a></span>
+												 <span style="float:left"> Don't see your device? First open Spotify then <a href="/refresh_devices">refresh</a></span>
 
 
 
