@@ -131,6 +131,13 @@
 </nav>
 
 			<!-- Main -->
+			<ul class="nav nav-tabs">
+			  <li class="active"><a data-toggle="tab" href="#friends">Friends</a></li>
+			  <li><a data-toggle="tab" href="#menu1">You</a></li>
+			  <li><a data-toggle="tab" href="#menu2">World</a></li>
+			</ul>
+	<div class="tab-content">
+  		<div id="friends" class="tab-pane fade in active">
 				<section id="main" class="container">
 					<!-- <header>
 						<h2>Elements</h2>
@@ -147,6 +154,8 @@
 							<br>
 							<h3>Share your music with friends. Login to get started</h3>
 						{% else %}
+
+
 							<h2 align="center">Your Friends</h2>
 							{% if fb_token_valid==1 %}
 							<h4 align="center" style="margin-bottom: 10px;">Looking for more? <a href="/refresh_fb_friends">Refresh Facebook Friends</a>
@@ -154,8 +163,10 @@
 							{% else %}
 								<h4 align="center" style="margin-bottom: 10px;">Looking for more?</h4>
 								<div id="wrapper" style="text-align: center">    
-								    <div class="fb-login-button" data-max-rows="1" data-size="medium" data-button-type="continue_with" data-show-faces="false" data-auto-logout-link=false data-use-continue-as="false" data-scope="public_profile,user_friends" onlogin="onFacebookLogin()"></div>
-									</div>
+								    <div class="fb-login-button" data-max-rows="1" data-size="medium" data-button-type="continue_with" data-show-faces="false" data-auto-logout-link=false data-use-continue-as="false" data-scope="public_profile,user_friends" onlogin="onFacebookLogin()">
+								
+								    </div>
+								</div>
 							{% endif %}
 						{% endif %}
 
@@ -336,37 +347,6 @@
 												</form>
 
 												 <span style="float:left"> Don't see your device? First open Spotify then <a href="/refresh_devices">refresh</a></span>
-
-
-
-										  <!--
-												<div class="form-group row"> 
-											  		<div>		
-											  			<form name="tune_form" action="/tune_in" method = "POST" onsubmit="return validateForm(this)"><input type="hidden" name="tune_in_their_gid" value={{ f.gid }}><input type="hidden" name="tune_in_my_gid" value={{ my_gid }}>
-												   		<select class="form-control" name="device_select" required>
-															<option hidden value="no device" >Select Device</option>
-															{% for d in devices %}
-															<option value = {{ d.device_id }}>{{ d.device_name }} </option>
-															{% endfor %}
-														</select>
-											  		</div>
-											  
-													<div>
-												   		<select class="form-control" name="listener" required>
-												   			<option value = {{ my_name }}> As {{ my_name }}</option>									
-															<option value = "anonymous"> Anonymous </option>
-														</select>
-												 
-													</div>
-											 	 <div>
-												
-													<span><button type="submit" class="btn btn-primary"> Tune In</button></span>
-											  	</div>
-											  
-											  </form>
-
-											</div>
-											-->
 										  </div>
 										</div>
 
@@ -376,81 +356,13 @@
 
 						</div>
 					
+			</div>
 
-					<section class="box special features">
-						<div class="features-row">
-							<section>
-								<span class="icon major fa-bolt accent2"></span>
-								<h3>Magna etiam</h3>
-								<p>Integer volutpat ante et accumsan commophasellus sed aliquam feugiat lorem aliquet ut enim rutrum phasellus iaculis accumsan dolore magna aliquam veroeros.</p>
-							</section>
-							<section>
-								<span class="icon major fa-area-chart accent3"></span>
-								<h3>Ipsum dolor</h3>
-								<p>Integer volutpat ante et accumsan commophasellus sed aliquam feugiat lorem aliquet ut enim rutrum phasellus iaculis accumsan dolore magna aliquam veroeros.</p>
-							</section>
-						</div>
-						<div class="features-row">
-							<section>
-								<span class="icon major fa-cloud accent4"></span>
-								<h3>Sed feugiat</h3>
-								<p>Integer volutpat ante et accumsan commophasellus sed aliquam feugiat lorem aliquet ut enim rutrum phasellus iaculis accumsan dolore magna aliquam veroeros.</p>
-							</section>
-							<section>
-								<span class="icon major fa-lock accent5"></span>
-								<h3>Enim phasellus</h3>
-								<p>Integer volutpat ante et accumsan commophasellus sed aliquam feugiat lorem aliquet ut enim rutrum phasellus iaculis accumsan dolore magna aliquam veroeros.</p>
-							</section>
-						</div>
-					</section>
-
-					<div class="row">
-						<div class="6u 12u(narrower)">
-
-							<section class="box special">
-								<span class="image featured"><img src="/static/images/pic02.jpg" alt="" /></span>
-								<h3>Sed lorem adipiscing</h3>
-								<p>Integer volutpat ante et accumsan commophasellus sed aliquam feugiat lorem aliquet ut enim rutrum phasellus iaculis accumsan dolore magna aliquam veroeros.</p>
-								<ul class="actions">
-									<li><a href="#" class="button alt">Learn More</a></li>
-								</ul>
-							</section>
-
-						</div>
-						<div class="6u 12u(narrower)">
-
-							<section class="box special">
-								<span class="image featured"><img src="/static/images/pic03.jpg" alt="" /></span>
-								<h3>Accumsan integer</h3>
-								<p>Integer volutpat ante et accumsan commophasellus sed aliquam feugiat lorem aliquet ut enim rutrum phasellus iaculis accumsan dolore magna aliquam veroeros.</p>
-								<ul class="actions">
-									<li><a href="#" class="button alt">Learn More</a></li>
-								</ul>
-							</section>
-
-						</div>
-					</div>
-
-				</section>
-
-			<!-- CTA -->
-				<section id="cta">
-
-					<h2>Sign up for beta access</h2>
-					<p>Blandit varius ut praesent nascetur eu penatibus nisi risus faucibus nunc.</p>
-
-					<form>
-						<div class="row uniform 50%">
-							<div class="8u 12u(mobilep)">
-								<input type="email" name="email" id="email" placeholder="Email Address" />
-							</div>
-							<div class="4u 12u(mobilep)">
-								<input type="submit" value="Sign Up" class="fit" />
-							</div>
-						</div>
-					</form>
-
-				</section>
+		<div id="menu1" class="tab-pane fade">
+		    <h3>Menu 1</h3>
+		    <p>Some content in menu 1.</p>
+		  </div>
+					
 
 			<!-- Footer -->
 				<footer id="footer">
