@@ -72,8 +72,9 @@ def index():
     if "sid" in session:
         following = []
 
-
+        me = {}
         my_devices = []
+        my_listeners = []
         print "hello"
         url = "http://" + IP + "/get_guppy_id.php?spotify_id=%s" % (session['sid'])
         result = urllib2.urlopen(url)
@@ -84,8 +85,24 @@ def index():
             session["gid"] = my_gid
             fb_token_valid = int(user['fb_token_valid'])
             my_prof_pic = user['prof_pic']
+            my_song = user['song']
+            my_artist = user['artist']
+            my_playing = user['playing']
             listening_gid = user["id"]
+            me = {"my_gid":my_gid, "fb_token_valid":fb_token_valid, "my_prof_pic":my_prof_pic, "my_song":my_song, "my_artist": my_artist, "my_playing":my_playing, "listening_gid": listening_gid}
             listening = []
+
+            url = "http://" + IP + "/get_listeners.php?gid=%s" % (my_gid)
+            result = urllib2.urlopen(url)
+            data = json.load(result)
+            if data["success"] == 1:
+                listeners = data["listeners"]
+                for l in listeners:
+                    my_listener_name = l['name']
+                    my_listener_gid = l['gid']
+                    my_listener_prof_pic = l['prof_pic']
+                    my_listeners.append({"gid":my_listener_gid, "name":my_listener_name, "prof_pic":my_listener_prof_pic})
+
 
             if listening_gid is not None:
                 url = "http://" + IP + "/get_listening_state.php?gid=%s" % (listening_gid)
@@ -139,7 +156,7 @@ def index():
                         following_listening_prof = u["listening_prof"]
                         following.append({"gid":following_gid, "name":following_name, "prof_pic":following_prof_pic, "prof_url":following_prof_url, "artist":following_artist, "song":following_song, "playing":following_playing,
                                           "listening_status": following_listening_status, "listening_id": following_listening_id, "listening_name":following_listening_name, "listening_prof":following_listening_prof})
-        return render_template("index.html", logged=True, following=following, my_name=my_name, my_gid = my_gid, my_prof_pic=my_prof_pic, devices=devices, listening=listening, fb_token_valid=fb_token_valid)
+        return render_template("index.html", logged=True, following=following, me=me, devices=devices, listening=listening, my_listeners=my_listeners)
     else:
         following = []
         my_devices = []

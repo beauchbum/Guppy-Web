@@ -157,7 +157,7 @@
 
 
 							<h2 align="center">Your Friends</h2>
-							{% if fb_token_valid==1 %}
+							{% if me.fb_token_valid==1 %}
 							<h4 align="center" style="margin-bottom: 10px;">Looking for more? <a href="/refresh_fb_friends">Refresh Facebook Friends</a>
 							</h4>
 							{% else %}
@@ -240,7 +240,7 @@
 										  <div class="modal-footer">
 											<div class="form-group row"> 
 
-											  <form name="tune_out_form" action="/tune_out" method = "POST"><input type="hidden" name="tune_out_my_gid" value={{ my_gid }} onsubmit="setTimeout(function () { window.location.reload(); }, 10)">
+											  <form name="tune_out_form" action="/tune_out" method = "POST"><input type="hidden" name="tune_out_my_gid" value={{ me.my_gid }} onsubmit="setTimeout(function () { window.location.reload(); }, 10)">
 
 
 											  <div class="col-md-3">
@@ -318,7 +318,7 @@
 											{% endif %}
 										  </div>
 										  <div class="modal-footer">
-										 	 <form class="form-inline" name="tune_form" action="/tune_in" method = "POST" onsubmit="return validateForm(this)"><input type="hidden" name="tune_in_their_gid" value={{ f.gid }}><input type="hidden" name="tune_in_my_gid" value={{ my_gid }}>
+										 	 <form class="form-inline" name="tune_form" action="/tune_in" method = "POST" onsubmit="return validateForm(this)"><input type="hidden" name="tune_in_their_gid" value={{ f.gid }}><input type="hidden" name="tune_in_my_gid" value={{ me.my_gid }}>
 												  <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect" name="device_select" required>
 													<option hidden value="no device" >Select Device</option>
 													{% for d in devices %}
@@ -358,10 +358,65 @@
 					
 			</div>
 
+		{% if logged==true %}
+
 		<div id="menu1" class="tab-pane fade">
-		    <h3>Menu 1</h3>
-		    <p>Some content in menu 1.</p>
+			<section id="main" class="container">
+			<header style="margin-bottom: 2em;">
+			<!--
+				<div id="center_div" style="text-align: center">
+					<img class="img-circle" height=60% src={{ me.my_prof_pic }} alt="foo" />
+					<p align="center" style="margin-bottom: 0px; font-size:1.5em">{{ me.my_song }}</p>
+					<p align="center" style="margin-bottom: 10px;">{{ me.my_artist }}</p>
+				</div>
+
+			-->
+								<div id="center_div" style="overflow: hidden">  
+								  <div id="colLeft" style="height:20vh; width:20vh;">								
+								  	<img src={{ me.my_prof_pic }} class="img-circle" style="vertical-align: middle; height:100%; width:100%;">
+								  </div>
+								    <div id="colwrap">
+	
+								      <div id="colCenter" style="height:20vh; overflow: hidden">
+										<div style="padding-left:15px; margin-bottom: 10px; height:10vh; position:relative;">
+											<span style="font-size: 1.8em; position: absolute; bottom: 0; white-space: nowrap;">{{ me.my_song }}</span>
+										</div>
+										
+										<div style="padding-left:20px; height:10vh;">
+											<span style="font-size: 1.3em; white-space: nowrap;">{{ me.my_artist }}</span>
+										</div>
+
+								      </div>  
+								    </div>
+								</div>
+
+			</header>
+					<div class="list-group" style="max-height:40vh; overflow: auto">
+						{% for my_l in my_listeners %}
+							<a data-toggle="modal" href="#{{ my_l.gid }}" class="list-group-item list-group-item-action flex-column align-items-start">
+								<div id="parent" style="width:100%">  
+								  <div id="colLeft">								
+								  	<img src={{ my_l.prof_pic }} style="vertical-align: middle; height:100%; width:100%;">
+								  </div>
+								    <div id="colwrap">
+								      <div id="colRight">
+
+								      </div>
+								      <div id="colCenter">
+										<div style="font-size: 1.5em; padding-left:10px; vertical-align: top;">{{ my_l.name }}</div>
+										
+								      </div>  
+								    </div>
+								</div>							
+							  </a>
+							  
+						 {% endfor %}
+
+						</div>
+			</section>
 		  </div>
+
+		  {% endif %}
 					
 
 			<!-- Footer -->
