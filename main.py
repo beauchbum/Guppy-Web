@@ -143,7 +143,11 @@ def index():
                     following_gid = u['guppy_id']
                     if following_gid != listening_gid:
                         following_name = u['name']
+                        if following_name == "None":
+                            following_name = u['fb_name']
                         following_prof_pic = u['prof_pic']
+                        if following_prof_pic == "":
+                            following_prof_pic = u['fb_prof_pic']
                         following_prof_url = u['prof_url']
                         following_artist = u['artist']
                         following_song = u['song']
@@ -241,11 +245,15 @@ def tune_in():
         tune_in_their_gid = request.form["tune_in_their_gid"]
         device_id = request.form["device_select"]
         tune_in_my_gid = request.form["tune_in_my_gid"]
+        tune_in_anonymous = request.form.getlist("anonymous")
+        if len(tune_in_anonymous) > 0:
+            tune_in_anonymous = 1
+        else:
+            tune_in_anonymous = 0
 
-        anonymous = 0
         url = "http://" + IP + "/start_playback.php"
         temp_data = urllib.urlencode(
-            {'my_gid': str(tune_in_my_gid), 'their_gid': str(tune_in_their_gid), 'device_id': str(device_id), 'anonymous': str(anonymous)})
+            {'my_gid': str(tune_in_my_gid), 'their_gid': str(tune_in_their_gid), 'device_id': str(device_id), 'anonymous': str(tune_in_anonymous)})
         result = urllib2.urlopen(url, temp_data)
         data = json.load(result)
         if data["success"] == 0:
@@ -291,6 +299,7 @@ def fb_login():
             fb_gid = session["gid"]
             fb_token = request.form["fbLoginToken"]
             fb_id = request.form["fbLoginId"]
+            fb_name = request.form['']
             url = "http://" + IP + "/set_facebook_account.php?token=%s&fb_id=%s&my_gid=%s" % (fb_token, fb_id, fb_gid)
             result = urllib2.urlopen(url)
     return redirect(url_for('index'))

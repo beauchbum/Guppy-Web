@@ -101,11 +101,13 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 
       <form class="navbar-form navbar-left">
+      <!--
         <div class="form-group">
           <input type="text" class="form-control" placeholder="Search Users">
         </div>
-
+		
         <button type="submit" class="btn btn-default">Submit</button>
+      -->
       </form>
       <ul class="nav navbar-nav navbar-right">
       	{% if logged==false %}
@@ -291,8 +293,13 @@
 										 
 											<h4 class="modal-title">
 											{% if f.listening_status == 1 %}
-												{{ f.name }} listening to 
-												<font face="verdana" color="green">{{ f.listening_name }}</font>
+												{% if f.listening_id != me.my_gid %}
+													{{ f.name }} listening to 
+													<font face="verdana" color="green">{{ f.listening_name }}</font>
+												{% else %}
+													{{ f.name }} listening to 
+													<font face="verdana" color="green">You</font>
+												{% endif %}
 												<button type="button" class="close" data-dismiss="modal">&times;</button>
 											{% elif f.playing == 1 %}
 												{{ f.name }} - 
@@ -317,6 +324,7 @@
 											<input type="checkbox" data-width="25%" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" style="padding-left:20px">
 											{% endif %}
 										  </div>
+										  {% if f.listening_id != me.my_gid %}
 										  <div class="modal-footer">
 										 	 <form class="form-inline" name="tune_form" action="/tune_in" method = "POST" onsubmit="return validateForm(this)"><input type="hidden" name="tune_in_their_gid" value={{ f.gid }}><input type="hidden" name="tune_in_my_gid" value={{ me.my_gid }}>
 												  <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect" name="device_select" required>
@@ -348,6 +356,8 @@
 
 												 <span style="float:left"> Don't see your device? First open Spotify then <a href="/refresh_devices">refresh</a></span>
 										  </div>
+
+										  {% endif %}
 										</div>
 
 									  </div>
@@ -372,18 +382,18 @@
 
 			-->
 								<div id="center_div" style="overflow: hidden">  
-								  <div id="colLeft" style="height:20vh; width:20vh;">								
+								  <div id="colLeft" style="height:17vh; width:17vh;">								
 								  	<img src={{ me.my_prof_pic }} class="img-circle" style="vertical-align: middle; height:100%; width:100%;">
 								  </div>
 								    <div id="colwrap">
 	
 								      <div id="colCenter" style="height:20vh; overflow: hidden">
 										<div style="padding-left:15px; margin-bottom: 10px; height:10vh; position:relative;">
-											<span style="font-size: 1.8em; position: absolute; bottom: 0; white-space: nowrap;">{{ me.my_song }}</span>
+											<span style="font-size: 1.6em; position: absolute; bottom: 0; white-space: nowrap;">{{ me.my_song }}</span>
 										</div>
 										
 										<div style="padding-left:20px; height:10vh;">
-											<span style="font-size: 1.3em; white-space: nowrap;">{{ me.my_artist }}</span>
+											<span style="font-size: 1.2em; white-space: nowrap;">{{ me.my_artist }}</span>
 										</div>
 
 								      </div>  
@@ -392,27 +402,33 @@
 
 			</header>
 					<div class="list-group" style="max-height:40vh; overflow: auto">
+					{% if my_listeners | length > 0 %}
 						{% for my_l in my_listeners %}
-							<a data-toggle="modal" href="#{{ my_l.gid }}" class="list-group-item list-group-item-action flex-column align-items-start">
+							<div class="list-group-item list-group-item-action flex-column align-items-start">
 								<div id="parent" style="width:100%">  
 								  <div id="colLeft">								
 								  	<img src={{ my_l.prof_pic }} style="vertical-align: middle; height:100%; width:100%;">
 								  </div>
 								    <div id="colwrap">
-								      <div id="colRight">
-
-								      </div>
-								      <div id="colCenter">
-										<div style="font-size: 1.5em; padding-left:10px; vertical-align: top;">{{ my_l.name }}</div>
-										
+								    <div id="colRight" style="width:12vh;">
+										<input type="checkbox" data-width="100%" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" style="padding-left:20px">
+								    </div>		
+								      <div id="colCenter" >
+										<div style="font-size: 1.5em; padding-left:10px; vertical-align: top;">{{ my_l.name }}</div>	
 								      </div>  
 								    </div>
-								</div>							
-							  </a>
-							  
+								</div>	
+							</div>			
+	
+					
 						 {% endfor %}
-
+					{% else %}
+						<div style="text-align:center; font-size:1.5em" class="list-group-item list-group-item-action flex-column align-items-start">
+							No Listeners Yet!
 						</div>
+					{% endif %}
+					</div>
+					
 			</section>
 		  </div>
 
