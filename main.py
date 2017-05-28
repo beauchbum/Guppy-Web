@@ -258,7 +258,7 @@ def tune_in():
         data = json.load(result)
         if data["success"] == 0:
 
-            if data["error"] == 404:
+            if data["error"] == 404 or data["error"] == 403:
                 flash(u'Sorry that device is no longer active', category='danger')
             else:
                 print "ERROR TUNING IN" + str(data["error"])
@@ -309,6 +309,20 @@ def logout():
     # remove the username from the session if it's there
     session.pop('sid', None)
     return redirect(url_for('index'))
+
+
+@app.route("/follow", methods=["GET"])
+def follow():
+    follow_my_gid = request.args['my_gid']
+    follow_their_gid = request.args['their_gid']
+    return ""
+
+@app.route("/unfollow", methods=["GET"])
+def unfollow():
+    print "Unfollow"
+    unfollow_my_gid = request.args['my_gid']
+    unfollow_their_gid = request.args['their_gid']
+    return ""
 
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 

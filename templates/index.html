@@ -71,6 +71,27 @@
 		});
 	}
 
+	function switchMoved(my_switch, my_gid, their_gid)
+	{
+
+		if($(my_switch).prop('checked')==false)
+		{
+		    var xmlHttp = new XMLHttpRequest();
+		    xmlHttp.open( "GET", "/unfollow?my_gid=0&their_gid=1", true ); // false for synchronous request
+		    xmlHttp.send( null );
+		    return xmlHttp.responseText;
+		}
+		else
+		{
+			var xmlHttp = new XMLHttpRequest();
+		    xmlHttp.open( "GET", "/follow?my_gid=my_gid&their_gid=their_gid", true ); // false for synchronous request
+		    xmlHttp.send( null );
+		    return xmlHttp.responseText;
+		}
+
+
+
+	}
 
 
 
@@ -187,7 +208,7 @@
 					{% endwith %}
 										<!-- </section> -->
 						
-						<div class="list-group" style="max-height:40vh; overflow: auto">
+						<div class="list-group" style="max-height:60vh; overflow: auto">
 						
 						{% for l in listening %}
 							  <a data-toggle="modal" href="#myModal" class="list-group-item list-group-item-action flex-column align-items-start active" style="background-color: #79C3F7; border-color: #79C3F7;">
@@ -316,7 +337,7 @@
 										  </div>
 										  <div class="modal-body">
 											<img src={{ f.prof_pic }} class="img-circle" height="15%" width="15%" style="vertical-align: middle">
-											<input type="checkbox" data-width="25%" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" style="padding-left:20px">
+											<input type="checkbox" data-width="25%" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" onchange="switchMoved(this, {{ me.my_gid }},{{ f.gid }})" style="padding-left:20px">
 											{% if f.listening_status == 1 %}
 											<span class="glyphicon glyphicon-arrow-right" aria-hidden="true" style="font-size: 3.0em; vertical-align: middle"></span>
 
