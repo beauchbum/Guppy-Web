@@ -71,11 +71,11 @@ def index():
 
     if "sid" in session:
         following = []
-
+        search = False
+        search_results = []
         me = {}
         my_devices = []
         my_listeners = []
-        print "hello"
         url = "http://" + IP + "/get_guppy_id.php?spotify_id=%s" % (session['sid'])
         result = urllib2.urlopen(url)
         data = json.load(result)
@@ -99,9 +99,13 @@ def index():
                 listeners = data["listeners"]
                 for l in listeners:
                     my_listener_name = l['name']
+                    if my_listener_name == "None":
+                        my_listener_name = l['fb_name']
                     my_listener_gid = l['gid']
                     my_listener_prof_pic = l['prof_pic']
-                    my_listeners.append({"gid":my_listener_gid, "name":my_listener_name, "prof_pic":my_listener_prof_pic})
+                    if my_listener_prof_pic == "":
+                        my_listener_prof_pic = l['fb_prof_pic']
+                    my_listeners.append({"gid":my_listener_gid, "name":my_listener_name, "prof_pic":my_listener_prof_pic, "following":int(l["following"])})
 
 
             if listening_gid is not None:
@@ -111,7 +115,11 @@ def index():
                 users = data["users"]
                 for u in users:
                     listening_name = u['name']
+                    if listening_name == "None":
+                        listening_name = u['fb_name']
                     listening_prof_pic = u['prof_pic']
+                    if listening_prof_pic == "":
+                        listening_prof_pic = u['fb_prof_pic']
                     listening_prof_url = u['prof_url']
                     listening_artist = u['artist']
                     listening_song = u['song']
@@ -160,7 +168,33 @@ def index():
                         following_listening_prof = u["listening_prof"]
                         following.append({"gid":following_gid, "name":following_name, "prof_pic":following_prof_pic, "prof_url":following_prof_url, "artist":following_artist, "song":following_song, "playing":following_playing,
                                           "listening_status": following_listening_status, "listening_id": following_listening_id, "listening_name":following_listening_name, "listening_prof":following_listening_prof})
-        return render_template("index.html", logged=True, following=following, me=me, devices=devices, listening=listening, my_listeners=my_listeners)
+                if "search" in request.args:
+                    search = request.args["search"]
+                    if search == "True":
+                        search = True
+                        print "something"
+                        search_term = request.args["search_term"] + "%"
+                        print search_term
+                        print my_gid
+                        url = "http://" + IP + "/search_users.php?search_term=%s&my_gid=%s" % (search_term,my_gid)
+                        print url
+                        result = urllib2.urlopen(url)
+                        data = json.load(result)
+                        print data
+                        if data["success"] == 1:
+                            users = data["users"]
+                            for u in users:
+                                name = u["name"]
+                                if name == "None":
+                                    name = u["fb_name"]
+                                prof_pic = u["prof_pic"]
+                                if prof_pic == "":
+                                    prof_pic = u["fb_prof_pic"]
+                                search_result = {"gid":u["guppy_id"], "name":name, "song":u["song"], "artist":u["artist"], "uri":u["uri"], "playing":u["playing"], "prof_pic":prof_pic, "following":int(u["following"])}
+                                search_results.append(search_result)
+
+
+        return render_template("index.html", logged=True, following=following, me=me, devices=devices, listening=listening, my_listeners=my_listeners, search=search, search_results=search_results)
     else:
         following = []
         my_devices = []
@@ -315,6 +349,8 @@ def logout():
 def follow():
     follow_my_gid = request.args['my_gid']
     follow_their_gid = request.args['their_gid']
+    url = "http://" + IP + "/follow_user.php?followed_id=%s&follower_id=%s" % (follow_their_gid, follow_my_gid)
+    result = urllib2.urlopen(url)
     return ""
 
 @app.route("/unfollow", methods=["GET"])
@@ -322,7 +358,21 @@ def unfollow():
     print "Unfollow"
     unfollow_my_gid = request.args['my_gid']
     unfollow_their_gid = request.args['their_gid']
+    print unfollow_my_gid
+    print unfollow_their_gid
+    url = "http://" + IP + "/unfollow_user.php?followed_id=%s&follower_id=%s" % (unfollow_their_gid, unfollow_my_gid)
+    result = urllib2.urlopen(url)
     return ""
+
+@app.route("/search", methods=["POST"])
+def search():
+    search = False
+    if "search" in request.form:
+        if request.form["search"] != "":
+            search = True
+            search_term = request.form["search"]
+    return redirect(url_for('index', search=search, search_term=search_term))
+
 
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 

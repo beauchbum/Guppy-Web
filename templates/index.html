@@ -52,6 +52,14 @@
 		}
 	}
 
+	function validateSearch(form){
+		var x = form["search"].value;
+		if (x == ""){
+			alert("Empty Search");
+			return false;
+		}
+	}
+
 	function checkLoginState() {
 		  FB.getLoginStatus(function(response) {
 		    statusChangeCallback(response);
@@ -77,14 +85,14 @@
 		if($(my_switch).prop('checked')==false)
 		{
 		    var xmlHttp = new XMLHttpRequest();
-		    xmlHttp.open( "GET", "/unfollow?my_gid=0&their_gid=1", true ); // false for synchronous request
+		    xmlHttp.open( "GET", "/unfollow?my_gid=" + my_gid + "&their_gid=" + their_gid, true ); // false for synchronous request
 		    xmlHttp.send( null );
 		    return xmlHttp.responseText;
 		}
 		else
 		{
 			var xmlHttp = new XMLHttpRequest();
-		    xmlHttp.open( "GET", "/follow?my_gid=my_gid&their_gid=their_gid", true ); // false for synchronous request
+		    xmlHttp.open( "GET", "/follow?my_gid=" + my_gid + "&their_gid=" + their_gid, true ); // false for synchronous request
 		    xmlHttp.send( null );
 		    return xmlHttp.responseText;
 		}
@@ -155,12 +163,22 @@
 
 			<!-- Main -->
 			<ul class="nav nav-tabs">
+			{% if search == false %}
 			  <li class="active"><a data-toggle="tab" href="#friends">Friends</a></li>
 			  <li><a data-toggle="tab" href="#menu1">You</a></li>
-			  <li><a data-toggle="tab" href="#menu2">World</a></li>
+			  <li><a data-toggle="tab" href="#menu2">Search</a></li>
+			{% else %}
+			  <li><a data-toggle="tab" href="#friends">Friends</a></li>
+			  <li><a data-toggle="tab" href="#menu1">You</a></li>
+			  <li class="active"><a data-toggle="tab" href="#menu2">Search</a></li>
+			{% endif %}
 			</ul>
 	<div class="tab-content">
-  		<div id="friends" class="tab-pane fade in active">
+		{% if search == false %}
+  			<div id="friends" class="tab-pane fade in active">
+  		{% else %}
+  		  	<div id="friends" class="tab-pane fade">
+  		{% endif %}
 				<section id="main" class="container">
 					<!-- <header>
 						<h2>Elements</h2>
@@ -208,7 +226,7 @@
 					{% endwith %}
 										<!-- </section> -->
 						
-						<div class="list-group" style="max-height:60vh; overflow: auto">
+						<div class="list-group" style="max-height:40vh; overflow: auto">
 						
 						{% for l in listening %}
 							  <a data-toggle="modal" href="#myModal" class="list-group-item list-group-item-action flex-column align-items-start active" style="background-color: #79C3F7; border-color: #79C3F7;">
@@ -342,12 +360,17 @@
 											<span class="glyphicon glyphicon-arrow-right" aria-hidden="true" style="font-size: 3.0em; vertical-align: middle"></span>
 
 											<img src={{ f.listening_prof }} class="img-circle" height="15%" width="15%" style="vertical-align: middle">
-											<input type="checkbox" data-width="25%" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" style="padding-left:20px">
+											<input type="checkbox" data-width="25%" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" onchange="switchMoved(this, {{ me.my_gid }},{{ f.listening_id }})" style="padding-left:20px">
 											{% endif %}
 										  </div>
 										  {% if f.listening_id != me.my_gid %}
 										  <div class="modal-footer">
-										 	 <form class="form-inline" name="tune_form" action="/tune_in" method = "POST" onsubmit="return validateForm(this)"><input type="hidden" name="tune_in_their_gid" value={{ f.gid }}><input type="hidden" name="tune_in_my_gid" value={{ me.my_gid }}>
+										 	 <form class="form-inline" name="tune_form" action="/tune_in" method = "POST" onsubmit="return validateForm(this)">
+										 	 {% if f.listening_status == 1 %}
+										 	 	<input type="hidden" name="tune_in_their_gid" value={{ f.listening_id }}><input type="hidden" name="tune_in_my_gid" value={{ me.my_gid }}>
+										 	 {% else %}
+										 	 	<input type="hidden" name="tune_in_their_gid" value={{ f.gid }}><input type="hidden" name="tune_in_my_gid" value={{ me.my_gid }}>
+										 	 {% endif %}
 												  <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect" name="device_select" required>
 													<option hidden value="no device" >Select Device</option>
 													{% for d in devices %}
@@ -386,10 +409,10 @@
 						 {% endfor %}
 
 						</div>
+  		 
 					
 			</div>
 
-		{% if logged==true %}
 
 		<div id="menu1" class="tab-pane fade">
 			<section id="main" class="container">
@@ -432,7 +455,11 @@
 								  </div>
 								    <div id="colwrap">
 								    <div id="colRight" style="width:12vh;">
-										<input type="checkbox" data-width="100%" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" style="padding-left:20px">
+								    	{% if my_l.following == 1 %}
+											<input type="checkbox" data-width="100%" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" style="padding-left:20px" onchange="switchMoved(this, {{ me.my_gid }},{{ my_l.gid }})">
+								    	{% else %}
+											<input type="checkbox" data-width="100%" data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" style="padding-left:20px" onchange="switchMoved(this, {{ me.my_gid }},{{ my_l.gid }})">
+								    	{% endif %}
 								    </div>		
 								      <div id="colCenter" >
 										<div style="font-size: 1.5em; padding-left:10px; vertical-align: top;">{{ my_l.name }}</div>	
@@ -453,7 +480,62 @@
 			</section>
 		  </div>
 
-		  {% endif %}
+		 {% if search == false %}
+		  <div id="menu2" class="tab-pane fade" style="background: 	#D8D8D8;">
+		 {% else %}
+		  <div id="menu2" class="tab-pane fade in active" style="background: 	#D8D8D8;">
+		 {% endif %}
+			<section id="main" class="container">
+			<header style="margin-bottom: 2em;">
+				<form action="/search" onsubmit="return validateSearch(this)" method="POST"> 
+				  <div class="row">
+				    <div style="width:100%; height:10vh;">
+				      <div class="input-group" style="width:100%">
+						<input type="text" name="search" placeholder="Search..">
+
+				   </div>
+				    </div>
+				  </div>
+				</form>
+
+			</header>
+					<div class="list-group" style="max-height:40vh; overflow: auto">
+					{% if search == true %}
+						{% if search_results | length > 0 %}
+							{% for s in search_results %}
+								<div class="list-group-item list-group-item-action flex-column align-items-start">
+									<div id="parent" style="width:100%">  
+									  <div id="colLeft">								
+									  	<img src={{ s.prof_pic }} style="vertical-align: middle; height:100%; width:100%;">
+									  </div>
+									    <div id="colwrap">
+									    <div id="colRight" style="width:12vh;">
+									    	{% if s.following == 1 %}
+												<input type="checkbox" data-width="100%" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" style="padding-left:20px" onchange="switchMoved(this, {{ me.my_gid }},{{ s.gid }})">
+											{% else %}
+												<input type="checkbox" data-width="100%" data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" style="padding-left:20px" onchange="switchMoved(this, {{ me.my_gid }},{{ s.gid }})">
+											{% endif %}
+									    </div>		
+									      <div id="colCenter" >
+											<div style="font-size: 1.5em; padding-left:10px; vertical-align: top;">{{ s.name }}</div>	
+									      </div>  
+									    </div>
+									</div>	
+								</div>			
+		
+						
+							 {% endfor %}
+						{% else %}
+						<div style="text-align:center; font-size:1.5em" class="list-group-item list-group-item-action flex-column align-items-start">
+							No Results, try again!
+						</div>
+						{% endif %}
+					{% endif %}
+					</div>
+					
+			</section>
+		  </div>
+
 					
 
 			<!-- Footer -->
