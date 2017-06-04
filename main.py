@@ -334,6 +334,7 @@ def fb_login():
             fb_token = request.form["fbLoginToken"]
             fb_id = request.form["fbLoginId"]
             url = "http://" + IP + "/set_facebook_account.php?token=%s&fb_id=%s&my_gid=%s" % (fb_token, fb_id, fb_gid)
+            urllib2.urlopen(url)
     return redirect(url_for('index'))
 
 @app.route('/logout')
