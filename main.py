@@ -239,7 +239,6 @@ def callback():
     # Combine profile and playlist data to display
     #display_arr = [profile_data] + playlist_data["items"]
 
-    print profile_data
     sid = profile_data['id']
     name = profile_data['display_name']
     prof_url = profile_data['external_urls']['spotify']
@@ -248,7 +247,12 @@ def callback():
     except IndexError:
         prof_pic = ""
 
+    if name is None:
+        name = "None"
 
+    print name
+    print prof_url
+    print prof_pic
     session["sid"] = sid
     url = "http://" + IP + "/create_user.php"
     data = urllib.urlencode({'name': name, 'profile_url':prof_url, 'id':sid, 'prof_pic':prof_pic, 'access_token':access_token, 'refresh_token':refresh_token})
@@ -329,9 +333,7 @@ def fb_login():
             fb_gid = session["gid"]
             fb_token = request.form["fbLoginToken"]
             fb_id = request.form["fbLoginId"]
-            fb_name = request.form['']
             url = "http://" + IP + "/set_facebook_account.php?token=%s&fb_id=%s&my_gid=%s" % (fb_token, fb_id, fb_gid)
-            result = urllib2.urlopen(url)
     return redirect(url_for('index'))
 
 @app.route('/logout')
