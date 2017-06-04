@@ -413,7 +413,7 @@
 					
 			</div>
 
-
+		{% if logged == true %}
 		<div id="menu1" class="tab-pane fade">
 			<section id="main" class="container">
 			<header style="margin-bottom: 2em;">
@@ -479,7 +479,10 @@
 					
 			</section>
 		  </div>
+		  {% endif %}
 
+
+		 {% if logged == true %}
 		 {% if search == false %}
 		  <div id="menu2" class="tab-pane fade" style="background: 	#D8D8D8;">
 		 {% else %}
@@ -535,6 +538,7 @@
 					
 			</section>
 		  </div>
+		  {% endif %}
 
 					
 

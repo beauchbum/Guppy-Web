@@ -168,19 +168,14 @@ def index():
                         following_listening_prof = u["listening_prof"]
                         following.append({"gid":following_gid, "name":following_name, "prof_pic":following_prof_pic, "prof_url":following_prof_url, "artist":following_artist, "song":following_song, "playing":following_playing,
                                           "listening_status": following_listening_status, "listening_id": following_listening_id, "listening_name":following_listening_name, "listening_prof":following_listening_prof})
-                if "search" in request.args:
-                    search = request.args["search"]
-                    if search == "True":
-                        search = True
-                        print "something"
-                        search_term = request.args["search_term"] + "%"
-                        print search_term
-                        print my_gid
+                if "search" in session:
+                    if session["search"] == True:
+                        search = session["search"]
+                        search_term = session["search_term"] + "%"
+                        session["search"] = False
                         url = "http://" + IP + "/search_users.php?search_term=%s&my_gid=%s" % (search_term,my_gid)
-                        print url
                         result = urllib2.urlopen(url)
                         data = json.load(result)
-                        print data
                         if data["success"] == 1:
                             users = data["users"]
                             for u in users:
@@ -371,7 +366,10 @@ def search():
         if request.form["search"] != "":
             search = True
             search_term = request.form["search"]
-    return redirect(url_for('index', search=search, search_term=search_term))
+            session["search"] = search
+            session["search_term"] = search_term
+
+    return redirect(url_for('index'))
 
 
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
