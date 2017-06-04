@@ -188,13 +188,14 @@ def index():
                                 search_result = {"gid":u["guppy_id"], "name":name, "song":u["song"], "artist":u["artist"], "uri":u["uri"], "playing":u["playing"], "prof_pic":prof_pic, "following":int(u["following"])}
                                 search_results.append(search_result)
 
-
+        print search
         return render_template("index.html", logged=True, following=following, me=me, devices=devices, listening=listening, my_listeners=my_listeners, search=search, search_results=search_results)
     else:
         following = []
+        search = False
         my_devices = []
         listening = []
-        return render_template("index.html", logged=False, following=following, my_name=UNKNOWN, listening=listening)
+        return render_template("index.html", logged=False, following=following, my_name=UNKNOWN, listening=listening, search=search)
 
 
 
