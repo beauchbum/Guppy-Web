@@ -85,6 +85,8 @@ def index():
             session["gid"] = my_gid
             fb_token_valid = int(user['fb_token_valid'])
             my_prof_pic = user['prof_pic']
+            if my_prof_pic == "":
+                my_prof_pic = user["fb_prof_pic"]
             my_song = user['song']
             my_artist = user['artist']
             my_playing = user['playing']
@@ -250,9 +252,7 @@ def callback():
     if name is None:
         name = "None"
 
-    print name
-    print prof_url
-    print prof_pic
+
     session["sid"] = sid
     url = "http://" + IP + "/create_user.php"
     data = urllib.urlencode({'name': name, 'profile_url':prof_url, 'id':sid, 'prof_pic':prof_pic, 'access_token':access_token, 'refresh_token':refresh_token})
