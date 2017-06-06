@@ -174,10 +174,14 @@ def index():
                     if session["search"] == True:
                         search = session["search"]
                         search_term = session["search_term"] + "%"
-                        session["search"] = False
+                        session.pop('search', None)
+                        session.pop('search_term', None)
                         url = "http://" + IP + "/search_users.php?search_term=%s&my_gid=%s" % (search_term,my_gid)
                         result = urllib2.urlopen(url)
                         data = json.load(result)
+                        print "TEST"
+                        print session
+
                         if data["success"] == 1:
                             users = data["users"]
                             for u in users:
@@ -187,7 +191,11 @@ def index():
                                 prof_pic = u["prof_pic"]
                                 if prof_pic == "":
                                     prof_pic = u["fb_prof_pic"]
-                                search_result = {"gid":u["guppy_id"], "name":name, "song":u["song"], "artist":u["artist"], "uri":u["uri"], "playing":u["playing"], "prof_pic":prof_pic, "following":int(u["following"])}
+                                search_listening_status = 0
+                                if u["listening_id"] is not None:
+                                    search_listening_status = 1
+                                search_result = {"gid":u["guppy_id"], "name":name, "song":u["song"], "artist":u["artist"], "uri":u["uri"], "playing":u["playing"], "prof_pic":prof_pic, "following":int(u["following"]),
+                                                 "listening_status":search_listening_status, "listening_id":u["listening_id"], "listening_name":u["listening_name"], "listening_prof":u["listening_prof"]}
                                 search_results.append(search_result)
 
         print search
