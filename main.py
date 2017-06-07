@@ -30,7 +30,7 @@ SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token"
 SPOTIFY_API_BASE_URL = "https://api.spotify.com"
 API_VERSION = "v1"
 SPOTIFY_API_URL = "{}/{}".format(SPOTIFY_API_BASE_URL, API_VERSION)
-IP = "52.38.141.152"
+IP = "34.211.42.62"
 
 ACCESS_TOKEN = ""
 
@@ -110,6 +110,7 @@ def index():
                     my_listeners.append({"gid":my_listener_gid, "name":my_listener_name, "prof_pic":my_listener_prof_pic, "following":int(l["following"])})
 
 
+
             if listening_gid is not None:
                 url = "http://" + IP + "/get_listening_state.php?gid=%s" % (listening_gid)
                 result = urllib2.urlopen(url)
@@ -151,25 +152,25 @@ def index():
                 users = data['users']
                 for u in users:
                     following_gid = u['guppy_id']
-                    if following_gid != listening_gid:
-                        following_name = u['name']
-                        if following_name == "None":
-                            following_name = u['fb_name']
-                        following_prof_pic = u['prof_pic']
-                        if following_prof_pic == "":
-                            following_prof_pic = u['fb_prof_pic']
-                        following_prof_url = u['prof_url']
-                        following_artist = u['artist']
-                        following_song = u['song']
-                        following_playing = int(u["playing"])
-                        following_listening_id = u["listening_id"]
-                        following_listening_status = 0
-                        if following_listening_id is not None:
-                            following_listening_status = 1
-                        following_listening_name =u["listening_name"]
-                        following_listening_prof = u["listening_prof"]
-                        following.append({"gid":following_gid, "name":following_name, "prof_pic":following_prof_pic, "prof_url":following_prof_url, "artist":following_artist, "song":following_song, "playing":following_playing,
-                                          "listening_status": following_listening_status, "listening_id": following_listening_id, "listening_name":following_listening_name, "listening_prof":following_listening_prof})
+                    following_name = u['name']
+                    if following_name == "None":
+                        following_name = u['fb_name']
+                    following_prof_pic = u['prof_pic']
+                    if following_prof_pic == "":
+                        following_prof_pic = u['fb_prof_pic']
+                    following_prof_url = u['prof_url']
+                    following_artist = u['artist']
+                    following_song = u['song']
+                    following_playing = int(u["playing"])
+                    following_listening = int(u["listening"])
+                    following_listening_id = u["listening_id"]
+                    following_listening_status = 0
+                    if following_listening_id is not None:
+                        following_listening_status = 1
+                    following_listening_name =u["listening_name"]
+                    following_listening_prof = u["listening_prof"]
+                    following.append({"gid":following_gid, "name":following_name, "prof_pic":following_prof_pic, "prof_url":following_prof_url, "artist":following_artist, "song":following_song, "playing":following_playing,
+                                          "listening":following_listening, "listening_status": following_listening_status, "listening_id": following_listening_id, "listening_name":following_listening_name, "listening_prof":following_listening_prof})
                 if "search" in session:
                     if session["search"] == True:
                         search = session["search"]
@@ -179,8 +180,6 @@ def index():
                         url = "http://" + IP + "/search_users.php?search_term=%s&my_gid=%s" % (search_term,my_gid)
                         result = urllib2.urlopen(url)
                         data = json.load(result)
-                        print "TEST"
-                        print session
 
                         if data["success"] == 1:
                             users = data["users"]
@@ -195,7 +194,7 @@ def index():
                                 if u["listening_id"] is not None:
                                     search_listening_status = 1
                                 search_result = {"gid":u["guppy_id"], "name":name, "song":u["song"], "artist":u["artist"], "uri":u["uri"], "playing":u["playing"], "prof_pic":prof_pic, "following":int(u["following"]),
-                                                 "listening_status":search_listening_status, "listening_id":u["listening_id"], "listening_name":u["listening_name"], "listening_prof":u["listening_prof"]}
+                                                 "listening":int(u["listening"]), "listening_status":search_listening_status, "listening_id":u["listening_id"], "listening_name":u["listening_name"], "listening_prof":u["listening_prof"]}
                                 search_results.append(search_result)
 
         print search
