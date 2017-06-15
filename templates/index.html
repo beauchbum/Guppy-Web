@@ -79,6 +79,30 @@
 		});
 	}
 
+
+
+	function toggleFollowButton(my_gid, their_gid)
+	{
+		if($("button[name=" + their_gid + "]").hasClass("btn btn-info")){
+			var xmlHttp = new XMLHttpRequest();
+		    xmlHttp.open( "GET", "/unfollow?my_gid=" + my_gid + "&their_gid=" + their_gid, true ); // false for synchronous request
+		    xmlHttp.send( null );
+			$("button[name=" + their_gid + "]").removeClass("btn btn-info");
+			$("button[name=" + their_gid + "]").addClass("btn btn-default");
+			$("button[name=" + their_gid + "]").innerHTML = "Follow"
+			return xmlHttp.responseText;
+		}
+		else{
+			var xmlHttp = new XMLHttpRequest();
+		    xmlHttp.open( "GET", "/follow?my_gid=" + my_gid + "&their_gid=" + their_gid, true ); // false for synchronous request
+		    xmlHttp.send( null );
+			$("button[name=" + their_gid + "]").removeClass("btn btn-default");
+			$("button[name=" + their_gid + "]").addClass("btn btn-info");
+			$("button[name=" + their_gid + "]").innerHTML = "Following"
+			return xmlHttp.responseText;	
+		}
+	}
+
 	function switchMoved(my_switch, my_gid, their_gid)
 	{
 
@@ -87,15 +111,31 @@
 		    var xmlHttp = new XMLHttpRequest();
 		    xmlHttp.open( "GET", "/unfollow?my_gid=" + my_gid + "&their_gid=" + their_gid, true ); // false for synchronous request
 		    xmlHttp.send( null );
-		    return xmlHttp.responseText;
+		    var temp_string = "toggle_" + their_gid;
+		    var toggles = document.getElementsByName(temp_string);
+		    console.log(toggles);
+		    /*
+		    for (var i = 0; i < toggles.length; i++) {
+		    	toggles[i].checked = false; 
+			}
+			*/
+
+		
+			$('#test-toggle').data("bs.toggle").off(true)
+
+
+			return xmlHttp.responseText;
+
 		}
 		else
 		{
 			var xmlHttp = new XMLHttpRequest();
 		    xmlHttp.open( "GET", "/follow?my_gid=" + my_gid + "&their_gid=" + their_gid, true ); // false for synchronous request
 		    xmlHttp.send( null );
+		    var toggles = document.getElementsByName("toggle_" + their_gid);
 		    return xmlHttp.responseText;
 		}
+
 
 
 
@@ -281,7 +321,15 @@
 										  </div>
 										  <div class="modal-body">
 											<img src={{ f.prof_pic }} class="img-circle" height="90" width="90" style="vertical-align: middle">
-											<input type="checkbox" data-width="120" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" style="padding-left:20px">
+									    	{% if f.following == 1 %}
+											    <button name="{{f.gid}}" type="button" class="btn btn-info" onclick="toggleFollowButton({{me.my_gid}}, {{ f.gid }})">
+											      <span class="glyphicon glyphicon-user"></span> Following
+											    </button>
+											{% else %}
+											    <button name="{{f.gid}}" type="button" class="btn btn-default" onclick="toggleFollowButton({{me.my_gid}}, {{ f.gid }})">
+											      <span class="glyphicon glyphicon-user"></span> Follow
+											    </button>
+											{% endif %}
 										  </div>	
 										  <div class="modal-footer">
 											<div class="form-group row"> 
@@ -319,10 +367,15 @@
 
 								      </div>
 								      <div id="colCenter">
+								      {% if f.playing == 1 %}
+										<div style="color: black; font-size: 1.5em; padding-left:10px; vertical-align: top;">{{ f.name }}</div>
+										
+										<div style="color: black; font-size: 1.0em; padding-left:15px; vertical-align: bottom;">{{ f.song }} by {{f.artist}}</div>
+									  {% else %}
 										<div style="font-size: 1.5em; padding-left:10px; vertical-align: top;">{{ f.name }}</div>
 										
 										<div style="font-size: 1.0em; padding-left:15px; vertical-align: bottom;">{{ f.song }} by {{f.artist}}</div>
-
+									  {% endif %}
 								      </div>  
 								    </div>
 								</div>							
@@ -360,12 +413,22 @@
 										  </div>
 										  <div class="modal-body">
 											<img src={{ f.prof_pic }} class="img-circle" height="15%" width="15%" style="vertical-align: middle">
-											<input type="checkbox" data-width="25%" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" onchange="switchMoved(this, {{ me.my_gid }},{{ f.gid }})" style="padding-left:20px">
+											    	<button name="{{f.gid}}" type="button" class="btn btn-info" onclick="toggleFollowButton({{me.my_gid}}, {{ f.gid }})">
+												      <span class="glyphicon glyphicon-user"></span> Following
+												    </button>
 											{% if f.listening_status == 1 %}
 											<span class="glyphicon glyphicon-arrow-right" aria-hidden="true" style="font-size: 3.0em; vertical-align: middle"></span>
 
 											<img src={{ f.listening_prof }} class="img-circle" height="15%" width="15%" style="vertical-align: middle">
-											<input type="checkbox" data-width="25%" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" onchange="switchMoved(this, {{ me.my_gid }},{{ f.listening_id }})" style="padding-left:20px">
+										    	{% if f.following_listener == 1 %}
+											    	<button name="{{f.gid}}" type="button" class="btn btn-info" onclick="toggleFollowButton({{me.my_gid}}, {{ f.gid }})">
+												      <span class="glyphicon glyphicon-user"></span> Following
+												    </button>
+												{% else %}
+												    <button name="{{f.gid}}" type="button" class="btn btn-default" onclick="toggleFollowButton({{me.my_gid}}, {{ f.gid }})">
+												      <span class="glyphicon glyphicon-user"></span> Follow
+												    </button>
+												{% endif %}
 											{% endif %}
 										  </div>
 										  {% if f.listening_id != me.my_gid %}
@@ -462,10 +525,14 @@
 								    <div id="colwrap">
 								    <div id="colRight" style="width:12vh;">
 								    	{% if my_l.following == 1 %}
-											<input type="checkbox" data-width="100%" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" style="padding-left:20px" onchange="switchMoved(this, {{ me.my_gid }},{{ my_l.gid }})">
-								    	{% else %}
-											<input type="checkbox" data-width="100%" data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" style="padding-left:20px" onchange="switchMoved(this, {{ me.my_gid }},{{ my_l.gid }})">
-								    	{% endif %}
+										    <button name="{{my_l.gid}}" type="button" class="btn btn-info" onclick="toggleFollowButton({{me.my_gid}}, {{ my_l.gid }})">
+										      <span class="glyphicon glyphicon-user"></span> Following
+										    </button>
+										{% else %}
+										    <button name="{{my_l.gid}}" type="button" class="btn btn-default" onclick="toggleFollowButton({{me.my_gid}}, {{ my_l.gid }})">
+										      <span class="glyphicon glyphicon-user"></span> Follow
+										    </button>
+										{% endif %}
 								    </div>		
 								      <div id="colCenter" >
 										<div style="font-size: 1.5em; padding-left:10px; vertical-align: top;">{{ my_l.name }}</div>	
@@ -494,7 +561,7 @@
 		 {% else %}
 		  <div id="menu2" class="tab-pane fade in active" style="background: 	#D8D8D8;">
 		 {% endif %}
-			<section id="main" class="container">
+			<section id="main" class="container">""
 			<header style="margin-bottom: 2em;">
 				<form action="/search" onsubmit="return validateSearch(this)" method="POST"> 
 				  <div class="row">
@@ -524,9 +591,13 @@
 									    <div id="colwrap">
 									    <div id="colRight" style="width:12vh;">
 									    	{% if s.following == 1 %}
-												<input type="checkbox" data-width="100%" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" style="padding-left:20px" onchange="switchMoved(this, {{ me.my_gid }},{{ s.gid }})">
+											    <button name="{{s.gid}}" type="button" class="btn btn-info" onclick="toggleFollowButton({{me.my_gid}}, {{ s.gid }})">
+											      <span class="glyphicon glyphicon-user"></span> Following
+											    </button>
 											{% else %}
-												<input type="checkbox" data-width="100%" data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" style="padding-left:20px" onchange="switchMoved(this, {{ me.my_gid }},{{ s.gid }})">
+											    <button name="{{s.gid}}" type="button" class="btn btn-default" onclick="toggleFollowButton({{me.my_gid}}, {{ s.gid }})">
+											      <span class="glyphicon glyphicon-user"></span> Follow
+											    </button>
 											{% endif %}
 									    </div>	
 									    <a data-toggle="modal" href="#search_{{ s.gid }}" style="text-decoration: none; color: black;">
@@ -564,7 +635,15 @@
 										  </div>
 										  <div class="modal-body">
 											<img src={{ s.prof_pic }} class="img-circle" height="90" width="90" style="vertical-align: middle">
-											<input type="checkbox" data-width="120" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" style="padding-left:20px">
+									    	{% if s.following == 1 %}
+											    <button name="{{s.gid}}" type="button" class="btn btn-info" onclick="toggleFollowButton({{me.my_gid}}, {{ s.gid }})">
+											      <span class="glyphicon glyphicon-user"></span> Following
+											    </button>
+											{% else %}
+											    <button name="{{s.gid}}" type="button" class="btn btn-default" onclick="toggleFollowButton({{me.my_gid}}, {{ s.gid }})">
+											      <span class="glyphicon glyphicon-user"></span> Follow
+											    </button>
+											{% endif %}
 										  </div>	
 										  <div class="modal-footer">
 											<div class="form-group row"> 
@@ -618,12 +697,28 @@
 										  </div>
 										  <div class="modal-body">
 											<img src={{ s.prof_pic }} class="img-circle" height="15%" width="15%" style="vertical-align: middle">
-											<input type="checkbox" data-width="25%" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" onchange="switchMoved(this, {{ me.my_gid }},{{ s.gid }})" style="padding-left:20px">
+									    	{% if s.following == 1 %}
+											    <button name="{{s.gid}}" type="button" class="btn btn-info" onclick="toggleFollowButton({{me.my_gid}}, {{ s.gid }})">
+											      <span class="glyphicon glyphicon-user"></span> Following
+											    </button>
+											{% else %}
+											    <button name="{{s.gid}}" type="button" class="btn btn-default" onclick="toggleFollowButton({{me.my_gid}}, {{ s.gid }})">
+											      <span class="glyphicon glyphicon-user"></span> Follow
+											    </button>
+											{% endif %}
 											{% if s.listening_status == 1 %}
-											<span class="glyphicon glyphicon-arrow-right" aria-hidden="true" style="font-size: 3.0em; vertical-align: middle"></span>
+												<span class="glyphicon glyphicon-arrow-right" aria-hidden="true" style="font-size: 3.0em; vertical-align: middle"></span>
 
-											<img src={{ s.listening_prof }} class="img-circle" height="15%" width="15%" style="vertical-align: middle">
-											<input type="checkbox" data-width="25%" checked data-toggle="toggle" data-onstyle="success" data-offstyle="danger" data-on="Following" data-off="Not Following" onchange="switchMoved(this, {{ me.my_gid }},{{ s.listening_id }})" style="padding-left:20px">
+												<img src={{ s.listening_prof }} class="img-circle" height="15%" width="15%" style="vertical-align: middle">
+									    	{% if s.following == 1 %}
+											    <button name="{{s.gid}}" type="button" class="btn btn-info" onclick="toggleFollowButton({{me.my_gid}}, {{ s.gid }})">
+											      <span class="glyphicon glyphicon-user"></span> Following
+											    </button>
+											{% else %}
+											    <button name="{{s.gid}}" type="button" class="btn btn-default" onclick="toggleFollowButton({{me.my_gid}}, {{ s.gid }})">
+											      <span class="glyphicon glyphicon-user"></span> Follow
+											    </button>
+											{% endif %}
 											{% endif %}
 										  </div>
 										  {% if s.listening_id != me.my_gid %}
