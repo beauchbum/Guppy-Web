@@ -174,7 +174,7 @@ def index():
                     following_listening_prof = u["listening_prof"]
                     following.append({"gid":following_gid, "name":following_name, "prof_pic":following_prof_pic, "prof_url":following_prof_url, "artist":following_artist, "song":following_song, "playing":following_playing,
                                           "listening":following_listening, "listening_status": following_listening_status, "following":int(u["following"]),
-                                            "following_listener":following_listener, "listening_id": following_listening_id, "listening_name":following_listening_name, "listening_prof":following_listening_prof})
+                                            "following_listener":following_listener, "listening_gid": following_listening_id, "listening_name":following_listening_name, "listening_prof":following_listening_prof})
                 if "search" in session:
                     if session["search"] == True:
                         search = session["search"]
@@ -291,7 +291,7 @@ def tune_in():
 
     if "tune_in_their_gid" in request.form:
         tune_in_their_gid = request.form["tune_in_their_gid"]
-        device_id = request.form["device_select"]
+        #device_id = request.form["device_select"]
         tune_in_my_gid = request.form["tune_in_my_gid"]
         tune_in_anonymous = request.form.getlist("anonymous")
         if len(tune_in_anonymous) > 0:
@@ -299,9 +299,9 @@ def tune_in():
         else:
             tune_in_anonymous = 0
 
-        url = "http://" + IP + "/start_playback.php"
+        url = "http://" + IP + "/start_playback_2.php"
         temp_data = urllib.urlencode(
-            {'my_gid': str(tune_in_my_gid), 'their_gid': str(tune_in_their_gid), 'device_id': str(device_id), 'anonymous': str(tune_in_anonymous)})
+            {'my_gid': str(tune_in_my_gid), 'their_gid': str(tune_in_their_gid),'anonymous': str(tune_in_anonymous)})
         result = urllib2.urlopen(url, temp_data)
         data = json.load(result)
         if data["success"] == 0:

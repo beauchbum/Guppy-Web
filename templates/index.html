@@ -89,7 +89,7 @@
 		    xmlHttp.send( null );
 			$("button[name=" + their_gid + "]").removeClass("btn btn-info");
 			$("button[name=" + their_gid + "]").addClass("btn btn-default");
-			$("button[name=" + their_gid + "]").innerHTML = "Follow"
+			$("span[name=" + their_gid + "]").text("Follow");
 			return xmlHttp.responseText;
 		}
 		else{
@@ -98,7 +98,7 @@
 		    xmlHttp.send( null );
 			$("button[name=" + their_gid + "]").removeClass("btn btn-default");
 			$("button[name=" + their_gid + "]").addClass("btn btn-info");
-			$("button[name=" + their_gid + "]").innerHTML = "Following"
+			$("span[name=" + their_gid + "]").text("Following");
 			return xmlHttp.responseText;	
 		}
 	}
@@ -323,11 +323,11 @@
 											<img src={{ f.prof_pic }} class="img-circle" height="90" width="90" style="vertical-align: middle">
 									    	{% if f.following == 1 %}
 											    <button name="{{f.gid}}" type="button" class="btn btn-info" onclick="toggleFollowButton({{me.my_gid}}, {{ f.gid }})">
-											      <span class="glyphicon glyphicon-user"></span> Following
+											      <span name="{{f.gid}}" class="glyphicon glyphicon-user">Following</span> 
 											    </button>
 											{% else %}
 											    <button name="{{f.gid}}" type="button" class="btn btn-default" onclick="toggleFollowButton({{me.my_gid}}, {{ f.gid }})">
-											      <span class="glyphicon glyphicon-user"></span> Follow
+											      <span name="{{f.gid}}" class="glyphicon glyphicon-user">Follow</span> 
 											    </button>
 											{% endif %}
 										  </div>	
@@ -414,19 +414,19 @@
 										  <div class="modal-body">
 											<img src={{ f.prof_pic }} class="img-circle" height="15%" width="15%" style="vertical-align: middle">
 											    	<button name="{{f.gid}}" type="button" class="btn btn-info" onclick="toggleFollowButton({{me.my_gid}}, {{ f.gid }})">
-												      <span class="glyphicon glyphicon-user"></span> Following
+												      <span name="{{f.gid}}" class="glyphicon glyphicon-user">Following</span> 
 												    </button>
 											{% if f.listening_status == 1 %}
 											<span class="glyphicon glyphicon-arrow-right" aria-hidden="true" style="font-size: 3.0em; vertical-align: middle"></span>
 
 											<img src={{ f.listening_prof }} class="img-circle" height="15%" width="15%" style="vertical-align: middle">
 										    	{% if f.following_listener == 1 %}
-											    	<button name="{{f.gid}}" type="button" class="btn btn-info" onclick="toggleFollowButton({{me.my_gid}}, {{ f.gid }})">
-												      <span class="glyphicon glyphicon-user"></span> Following
+											    	<button name="{{f.listener_gid}}" type="button" class="btn btn-info" onclick="toggleFollowButton({{me.my_gid}}, {{ f.listener_gid }})">
+												      <span name="{{f.listener_gid}}" class="glyphicon glyphicon-user">Following</span> 
 												    </button>
 												{% else %}
-												    <button name="{{f.gid}}" type="button" class="btn btn-default" onclick="toggleFollowButton({{me.my_gid}}, {{ f.gid }})">
-												      <span class="glyphicon glyphicon-user"></span> Follow
+												    <button name="{{f.listener_gid}}" type="button" class="btn btn-default" onclick="toggleFollowButton({{me.my_gid}}, {{ f.listener_gid }})">
+												      <span name="{{f.listener_gid}}" class="glyphicon glyphicon-user">Follow</span> 
 												    </button>
 												{% endif %}
 											{% endif %}
@@ -439,12 +439,14 @@
 										 	 {% else %}
 										 	 	<input type="hidden" name="tune_in_their_gid" value={{ f.gid }}><input type="hidden" name="tune_in_my_gid" value={{ me.my_gid }}>
 										 	 {% endif %}
+										 	 	<!--
 												  <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect" name="device_select" required>
 													<option hidden value="no device" >Select Device</option>
 													{% for d in devices %}
 													<option value = {{ d.device_id }}>{{ d.device_name }} </option>
 													{% endfor %}
 												  </select>
+												-->
 
 												  <!--	
 												  <label class="custom-control custom-checkbox mb-2 mr-sm-2 mb-sm-0">
@@ -466,7 +468,9 @@
 												{% endif %}
 												</form>
 
+												<!--
 												 <span style="float:left"> Don't see your device? First open Spotify then <a href="/refresh_devices">refresh</a></span>
+												 -->
 										  </div>
 
 										  {% endif %}
@@ -526,11 +530,11 @@
 								    <div id="colRight" style="width:12vh;">
 								    	{% if my_l.following == 1 %}
 										    <button name="{{my_l.gid}}" type="button" class="btn btn-info" onclick="toggleFollowButton({{me.my_gid}}, {{ my_l.gid }})">
-										      <span class="glyphicon glyphicon-user"></span> Following
+										      <span name="{{my_l.gid}}"" class="glyphicon glyphicon-user">Following</span> 
 										    </button>
 										{% else %}
 										    <button name="{{my_l.gid}}" type="button" class="btn btn-default" onclick="toggleFollowButton({{me.my_gid}}, {{ my_l.gid }})">
-										      <span class="glyphicon glyphicon-user"></span> Follow
+										      <span name="{{my_l.gid}}" class="glyphicon glyphicon-user">Follow</span> 
 										    </button>
 										{% endif %}
 								    </div>		
@@ -561,7 +565,7 @@
 		 {% else %}
 		  <div id="menu2" class="tab-pane fade in active" style="background: 	#D8D8D8;">
 		 {% endif %}
-			<section id="main" class="container">""
+			<section id="main" class="container">
 			<header style="margin-bottom: 2em;">
 				<form action="/search" onsubmit="return validateSearch(this)" method="POST"> 
 				  <div class="row">
@@ -592,11 +596,11 @@
 									    <div id="colRight" style="width:12vh;">
 									    	{% if s.following == 1 %}
 											    <button name="{{s.gid}}" type="button" class="btn btn-info" onclick="toggleFollowButton({{me.my_gid}}, {{ s.gid }})">
-											      <span class="glyphicon glyphicon-user"></span> Following
+											      <span name="{{s.gid}}" class="glyphicon glyphicon-user">Following</span> 
 											    </button>
 											{% else %}
 											    <button name="{{s.gid}}" type="button" class="btn btn-default" onclick="toggleFollowButton({{me.my_gid}}, {{ s.gid }})">
-											      <span class="glyphicon glyphicon-user"></span> Follow
+											      <span name="{{s.gid}}" class="glyphicon glyphicon-user">Follow</span> 
 											    </button>
 											{% endif %}
 									    </div>	
@@ -637,11 +641,11 @@
 											<img src={{ s.prof_pic }} class="img-circle" height="90" width="90" style="vertical-align: middle">
 									    	{% if s.following == 1 %}
 											    <button name="{{s.gid}}" type="button" class="btn btn-info" onclick="toggleFollowButton({{me.my_gid}}, {{ s.gid }})">
-											      <span class="glyphicon glyphicon-user"></span> Following
+											      <span name="{{s.gid}}" class="glyphicon glyphicon-user">Following</span> 
 											    </button>
 											{% else %}
 											    <button name="{{s.gid}}" type="button" class="btn btn-default" onclick="toggleFollowButton({{me.my_gid}}, {{ s.gid }})">
-											      <span class="glyphicon glyphicon-user"></span> Follow
+											      <span name="{{s.gid}}" class="glyphicon glyphicon-user">Follow</span> 
 											    </button>
 											{% endif %}
 										  </div>	
@@ -699,11 +703,11 @@
 											<img src={{ s.prof_pic }} class="img-circle" height="15%" width="15%" style="vertical-align: middle">
 									    	{% if s.following == 1 %}
 											    <button name="{{s.gid}}" type="button" class="btn btn-info" onclick="toggleFollowButton({{me.my_gid}}, {{ s.gid }})">
-											      <span class="glyphicon glyphicon-user"></span> Following
+											      <span name="{{s.gid}}" class="glyphicon glyphicon-user">Following</span> 
 											    </button>
 											{% else %}
 											    <button name="{{s.gid}}" type="button" class="btn btn-default" onclick="toggleFollowButton({{me.my_gid}}, {{ s.gid }})">
-											      <span class="glyphicon glyphicon-user"></span> Follow
+											      <span name="{{s.gid}}" class="glyphicon glyphicon-user">Follow</span> 
 											    </button>
 											{% endif %}
 											{% if s.listening_status == 1 %}
@@ -712,11 +716,11 @@
 												<img src={{ s.listening_prof }} class="img-circle" height="15%" width="15%" style="vertical-align: middle">
 									    	{% if s.following == 1 %}
 											    <button name="{{s.gid}}" type="button" class="btn btn-info" onclick="toggleFollowButton({{me.my_gid}}, {{ s.gid }})">
-											      <span class="glyphicon glyphicon-user"></span> Following
+											      <span name="{{s.gid}}" class="glyphicon glyphicon-user">Following</span> 
 											    </button>
 											{% else %}
 											    <button name="{{s.gid}}" type="button" class="btn btn-default" onclick="toggleFollowButton({{me.my_gid}}, {{ s.gid }})">
-											      <span class="glyphicon glyphicon-user"></span> Follow
+											      <span name="{{s.gid}}" class="glyphicon glyphicon-user">Follow</span> 
 											    </button>
 											{% endif %}
 											{% endif %}
