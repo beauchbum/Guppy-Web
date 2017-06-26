@@ -306,10 +306,15 @@ def tune_in():
         data = json.load(result)
         if data["success"] == 0:
 
-            if data["error"] == 404 or data["error"] == 403:
-                flash(u'Sorry that device is no longer active', category='danger')
+            if data["error"] == 404 or data["error"] == 403 or data["error"] == -1:
+                flash(u'Tried to play, but there is no active device. Open Spotify.', category='danger')
             else:
                 print "ERROR TUNING IN" + str(data["error"])
+        else:
+            print data
+            flash(u'Success! Playing on %s' % (str(data["device_name"])), category='success')
+
+
 
     return redirect(url_for('index'))
 
