@@ -36,7 +36,7 @@ ACCESS_TOKEN = ""
 
 # Server-side Parameters
 if os.getenv('SERVER_SOFTWARE', '').startswith('Google App Engine/'):
-    REDIRECT_URI = "http//guppysound.com/callback/q"
+    REDIRECT_URI = "http://guppysound.com/callback/q"
     requests_toolbelt.adapters.appengine.monkeypatch()
 
 else:
