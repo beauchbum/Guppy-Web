@@ -88,11 +88,11 @@
 
 	function toggleFollowButton(my_gid, their_gid)
 	{
-		if($("button[name=" + their_gid + "]").hasClass("btn btn-info")){
+		if($("button[name=" + their_gid + "]").hasClass("btn btn-success")){
 			var xmlHttp = new XMLHttpRequest();
 		    xmlHttp.open( "GET", "/unfollow?my_gid=" + my_gid + "&their_gid=" + their_gid, true ); // false for synchronous request
 		    xmlHttp.send( null );
-			$("button[name=" + their_gid + "]").removeClass("btn btn-info");
+			$("button[name=" + their_gid + "]").removeClass("btn btn-success");
 			$("button[name=" + their_gid + "]").addClass("btn btn-default");
 			$("span[name=" + their_gid + "]").text("Follow");
 			return xmlHttp.responseText;
@@ -102,7 +102,7 @@
 		    xmlHttp.open( "GET", "/follow?my_gid=" + my_gid + "&their_gid=" + their_gid, true ); // false for synchronous request
 		    xmlHttp.send( null );
 			$("button[name=" + their_gid + "]").removeClass("btn btn-default");
-			$("button[name=" + their_gid + "]").addClass("btn btn-info");
+			$("button[name=" + their_gid + "]").addClass("btn btn-success");
 			$("span[name=" + their_gid + "]").text("Following");
 			return xmlHttp.responseText;	
 		}
@@ -188,16 +188,22 @@
 	    <li><a href="/authorize">Login</a></li>
 
 	    {% else %}
+	    	
 	        <li class="dropdown">
 	          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Other Actions <span class="caret"></span></a>
 	          <ul class="dropdown-menu">
 	            <li>
-		            <a href="/refresh_devices">Refresh Devices</a>
+	            {% if me.private == 1 %}
+		            <a href="/go_public">Go Public</a>
+		        {% else %}
+		            <a href="/go_private">Go Private</a>
+		        {% endif %}
 		        </li>
-	            <!-- <li><a href="#">Deactivate Account</a></li> -->
 
 	          </ul>
 	        </li>
+	        
+
 	        <li><a href="/logout">Logout</a></li>
 	     {% endif %}
       </ul>
@@ -327,7 +333,7 @@
 										  <div class="modal-body">
 											<img src={{ f.prof_pic }} class="img-circle" height="90" width="90" style="vertical-align: middle">
 									    	{% if f.following == 1 %}
-											    <button name="{{f.gid}}" type="button" class="btn btn-info" onclick="toggleFollowButton({{me.my_gid}}, {{ f.gid }})">
+											    <button name="{{f.gid}}" type="button" class="btn btn-success" onclick="toggleFollowButton({{me.my_gid}}, {{ f.gid }})">
 											      <span name="{{f.gid}}" class="glyphicon glyphicon-user">Following</span> 
 											    </button>
 											{% else %}
@@ -356,36 +362,47 @@
 
 							{% else %}
 							<a data-toggle="modal" href="#{{ f.gid }}" class="list-group-item list-group-item-action flex-column align-items-start">
+
 								<div id="parent" style="width:100%">  
 								  <div id="colLeft">								
 								  	<img src={{ f.prof_pic }} style="vertical-align: middle; height:100%; width:100%;">
 								  </div>
 								    <div id="colwrap">
 								      <div id="colRight">
-								      {% if f.listening_status == 1 %}
-								      	<img src={{ f.listening_prof }} class="img-circle" style="border:none; display:block; margin:0 auto; height:50%; width:50%;"">
-									  {% elif f.playing == 1 %}
-								      	<img src="/static/images/green.gif" style="border:none; display:block; margin:0 auto; height:30%; width:30%;">
-								      {% elif f.playing == 0 %}
-								      	Inactive
-								      {% endif %}
+								      {% if f.private != 1 %}
+									      {% if f.listening_status == 1 %}
+									      	{% if f.anonymous == 1 %}
+									      		<img src="/static/images/anon.png" class="img-circle" style="border:none; display:block; margin:0 auto; height:50%; width:50%;">
+									      	{% else %}
+									      		<img src={{ f.listening_prof }} class="img-circle" style="border:none; display:block; margin:0 auto; height:50%; width:50%;">
+									      	{% endif %}
+										  {% elif f.playing == 1 %}
+									      	<img src="/static/images/green.gif" style="border:none; display:block; margin:0 auto; height:30%; width:30%;">
+									      {% elif f.playing == 0 %}
+									      	Inactive
+									      {% endif %}
+									  {% endif %}
 
 								      </div>
 								      <div id="colCenter">
-								      {% if f.playing == 1 %}
-										<div style="color: black; font-size: 1.5em; padding-left:10px; vertical-align: top;">{{ f.name }}</div>
-										
-										<div style="color: black; font-size: 1.0em; padding-left:15px; vertical-align: bottom;">{{ f.song }} by {{f.artist}}</div>
-									  {% else %}
-										<div style="font-size: 1.5em; padding-left:10px; vertical-align: top;">{{ f.name }}</div>
-										
-										<div style="font-size: 1.0em; padding-left:15px; vertical-align: bottom;">{{ f.song }} by {{f.artist}}</div>
+
+								      {% if f.private == 1 %}
+								      	<div style="font-size: 1.5em; padding-left:10px; vertical-align: top;">{{ f.name }}</div>
+								      	<div style="font-size: 1.0em; padding-left:15px; vertical-align: bottom;">Private Session</div>
+								      {% else %}
+								      	<div style="color: black; font-size: 1.5em; padding-left:10px; vertical-align: top;">{{ f.name }}</div>
+
+											{% if f.anonymous == 1 %}
+												<div style="color: black; font-size: 1.0em; padding-left:15px; vertical-align: bottom;">Listening anonymously</div>
+											{% else %}
+												<div style="color: black; font-size: 1.0em; padding-left:15px; vertical-align: bottom;">{{ f.song }} by {{f.artist}}</div>
+											{% endif %}
+							
 									  {% endif %}
 								      </div>  
 								    </div>
 								</div>							
 							  </a>
-							  
 							  <div id="{{ f.gid }}" class="modal fade" role="dialog" style="padding-top:40px">
 									  <div class="modal-dialog">
 
@@ -394,40 +411,48 @@
 										  <div class="modal-header">
 										 
 											<h4 class="modal-title">
-											{% if f.listening_status == 1 %}
-												{% if f.listening_gid != me.my_gid %}
-													{{ f.name }} listening to 
-													<font face="verdana" color="green">{{ f.listening_name }}</font>
+											{% if f.private == 1 %}
+												{{ f.name }} -
+												<font face="verdana">Private Session</font>
+											{% elif f.listening_status == 1 %}
+												{% if f.anonymous == 1 %}
+													{{ f.name }} listening anonymously
 												{% else %}
-													{{ f.name }} listening to 
-													<font face="verdana" color="green">You</font>
+													{% if f.listening_gid != me.my_gid %}
+														{{ f.name }} listening to 
+														<font face="verdana" color="green">{{ f.listening_name }}</font>
+													{% else %}
+														{{ f.name }} listening to 
+														<font face="verdana" color="green">You</font>
+													{% endif %}
 												{% endif %}
-												<button type="button" class="close" data-dismiss="modal">&times;</button>
 											{% elif f.playing == 1 %}
 												{{ f.name }} - 
 												<font face="verdana" color="green">Active</font>
-												<button type="button" class="close" data-dismiss="modal">&times;</button>
 											{% elif f.playing == 0 %}
 												{{ f.name }} - 
 												<font face="verdana" color="red">Inactive</font>
-												<button type="button" class="close" data-dismiss="modal">&times;</button>
 											{% endif %}
+												<button type="button" class="close" data-dismiss="modal">&times;</button>
 											</h4>
 											
 
 										  </div>
 										  <div class="modal-body">
 											<img src={{ f.prof_pic }} class="img-circle" height="15%" width="15%" style="vertical-align: middle">
-											    	<button name="{{f.gid}}" type="button" class="btn btn-info" onclick="toggleFollowButton({{me.my_gid}}, {{ f.gid }})">
+											    	<button name="{{f.gid}}" type="button" class="btn btn-success" onclick="toggleFollowButton({{me.my_gid}}, {{ f.gid }})">
 												      <span name="{{f.gid}}" class="glyphicon glyphicon-user">Following</span> 
 												    </button>
-											{% if f.listening_status == 1 %}
+											{% if f.listening_status == 1 and f.private != 1%}
 											<span class="glyphicon glyphicon-arrow-right" aria-hidden="true" style="font-size: 3.0em; vertical-align: middle"></span>
-
-											<img src={{ f.listening_prof }} class="img-circle" height="15%" width="15%" style="vertical-align: middle">
+												{% if f.anonymous == 1 %}
+													<img src="/static/images/anon.png" class="img-circle" height="15%" width="15%" style="vertical-align: middle">
+												{% else %}
+													<img src={{ f.listening_prof }} class="img-circle" height="15%" width="15%" style="vertical-align: middle">
+												{% endif %}
 											{% if f.listening_gid != me.my_gid %}
 										    	{% if f.following_listener == 1 %}
-												    	<button name="{{f.listener_gid}}" type="button" class="btn btn-info" onclick="toggleFollowButton({{me.my_gid}}, {{ f.listener_gid }})">
+												    	<button name="{{f.listener_gid}}" type="button" class="btn btn-success" onclick="toggleFollowButton({{me.my_gid}}, {{ f.listener_gid }})">
 													      <span name="{{f.listener_gid}}" class="glyphicon glyphicon-user">Following</span> 
 													    </button>
 													{% else %}
@@ -438,7 +463,7 @@
 												{% endif %}
 											{% endif %}
 										  </div>
-										  {% if f.listening_gid != me.my_gid %}
+										  {% if f.listening_gid != me.my_gid and f.anonymous != 1 and f.private != 1 %}
 										  <div class="modal-footer">
 										 	 <form class="form-inline" name="tune_form" action="/tune_in" method = "POST" onsubmit="return validateForm(this)">
 										 	 {% if f.listening_status == 1 %}
@@ -512,13 +537,23 @@
 								    <div id="colwrap">
 	
 								      <div id="colCenter" style="height:20vh; overflow: hidden">
-										<div style="padding-left:15px; margin-bottom: 10px; height:10vh; position:relative;">
-											<span style="font-size: 1.6em; position: absolute; bottom: 0; white-space: nowrap;">{{ me.my_song }}</span>
-										</div>
-										
-										<div style="padding-left:20px; height:10vh;">
-											<span style="font-size: 1.2em; white-space: nowrap;">{{ me.my_artist }}</span>
-										</div>
+								      	{% if me.private == 1 %}
+											<div style="padding-left:15px; margin-bottom: 10px; height:10vh; position:relative;">
+												<span style="color: red; font-size: 1.6em; position: absolute; bottom: 0; white-space: nowrap;">Private Session</span>
+											</div>
+											
+											<div style="padding-left:20px; height:10vh;">
+												<span style="font-size: 1.2em; white-space: nowrap;">Go <a href="/go_public" style="color: grey;">Public? </span>
+											</div>
+								      	{% else %}
+											<div style="padding-left:15px; margin-bottom: 10px; height:10vh; position:relative;">
+												<span style="font-size: 1.6em; position: absolute; bottom: 0; white-space: nowrap;">{{ me.my_song }}</span>
+											</div>
+											
+											<div style="padding-left:20px; height:10vh;">
+												<span style="font-size: 1.2em; white-space: nowrap;">{{ me.my_artist }}</span>
+											</div>
+										{% endif %}
 
 								      </div>  
 								    </div>
@@ -536,7 +571,7 @@
 								      <div id="colRight">
 								      {% if following[0].playing == 1 %}
 								      	<img src="/static/images/green.gif" style="border:none; display:block; margin:0 auto; height:30%; width:30%;">
-								     {% elif following[0].playing == 0 %}
+								      {% elif following[0].playing == 0 %}
 								      	Inactive
 								      {% endif %}
 								      </div>
@@ -575,7 +610,7 @@
 										  <div class="modal-body">
 											<img src={{ following[0].prof_pic }} class="img-circle" height="90" width="90" style="vertical-align: middle">
 									    	{% if following[0].following == 1 %}
-											    <button name="{{following[0].gid}}" type="button" class="btn btn-info" onclick="toggleFollowButton({{me.my_gid}}, {{ following[0].gid }})">
+											    <button name="{{following[0].gid}}" type="button" class="btn btn-success" onclick="toggleFollowButton({{me.my_gid}}, {{ following[0].gid }})">
 											      <span name="{{following[0].gid}}" class="glyphicon glyphicon-user">Following</span> 
 											    </button>
 											{% else %}
@@ -607,13 +642,18 @@
 							{% for my_l in my_listeners %}
 								<div class="list-group-item list-group-item-action flex-column align-items-start">
 									<div id="parent" style="width:100%">  
-									  <div id="colLeft">								
-									  	<img src={{ my_l.prof_pic }} style="vertical-align: middle; height:100%; width:100%;">
+									  <div id="colLeft">
+									  	{% if my_l.anonymous == 1 %}						
+									  		<img src="/static/images/anon.png" style="vertical-align: middle; height:100%; width:100%;">
+									  	{% else %}
+									  		<img src={{ my_l.prof_pic }} style="vertical-align: middle; height:100%; width:100%;">
+									  	{% endif %}
 									  </div>
 									    <div id="colwrap">
 									    <div id="colRight" style="width:12vh;">
+									   	{% if my_l.anonymous != 1 %}
 									    	{% if my_l.following == 1 %}
-											    <button name="{{my_l.gid}}" type="button" class="btn btn-info" onclick="toggleFollowButton({{me.my_gid}}, {{ my_l.gid }})">
+											    <button name="{{my_l.gid}}" type="button" class="btn btn-success" onclick="toggleFollowButton({{me.my_gid}}, {{ my_l.gid }})">
 											      <span name="{{my_l.gid}}"" class="glyphicon glyphicon-user">Following</span> 
 											    </button>
 											{% else %}
@@ -621,9 +661,14 @@
 											      <span name="{{my_l.gid}}" class="glyphicon glyphicon-user">Follow</span> 
 											    </button>
 											{% endif %}
+										{% endif %}
 									    </div>		
 									      <div id="colCenter" >
-											<div style="font-size: 1.5em; padding-left:10px; vertical-align: top;">{{ my_l.name }}</div>	
+									      {% if my_l.anonymous == 1 %}
+											<div style="font-size: 1.5em; padding-left:10px; vertical-align: top;">Anonymous User</div>
+										  {% else %}
+										  	<div style="font-size: 1.5em; padding-left:10px; vertical-align: top;">{{ my_l.name }}</div>
+										  {% endif %}
 									      </div>  
 									    </div>
 									</div>	
@@ -680,7 +725,8 @@
 									    <div id="colwrap">
 									    <div id="colRight" style="width:12vh;">
 									    	{% if s.following == 1 %}
-											    <button name="{{s.gid}}" type="button" class="btn btn-info" onclick="toggleFollowButton({{me.my_gid}}, {{ s.gid }})">
+
+											    <button name="{{s.gid}}" type="button" class="btn btn-success" onclick="toggleFollowButton({{me.my_gid}}, {{ s.gid }})">
 											      <span name="{{s.gid}}" class="glyphicon glyphicon-user">Following</span> 
 											    </button>
 											{% else %}
@@ -689,6 +735,15 @@
 											    </button>
 											{% endif %}
 									    </div>	
+									    {% if s.private == 1 %}
+									    <a style="text-decoration: none; color:grey;">
+									      <div id="colCenter" style="width:70%">
+											<div style="font-size: 1.5em; padding-left:10px; vertical-align: top;">{{ s.name }}</div>	
+
+											<div style="font-size: 1.0em; padding-left:15px; vertical-align: bottom;">Private Session</div>
+									      </div>  
+									     </a>
+									    {% else %}
 									    <a data-toggle="modal" href="#search_{{ s.gid }}" style="text-decoration: none; color: black;">
 									      <div id="colCenter" style="width:70%">
 											<div style="font-size: 1.5em; padding-left:10px; vertical-align: top;">{{ s.name }}</div>	
@@ -696,6 +751,7 @@
 											<div style="font-size: 1.0em; padding-left:15px; vertical-align: bottom;">{{ s.song }} by {{s.artist}}</div>
 									      </div>  
 									     </a>
+									     {% endif %}
 									    </div>
 									</div>	
 								</div>	
@@ -725,7 +781,7 @@
 										  <div class="modal-body">
 											<img src={{ s.prof_pic }} class="img-circle" height="90" width="90" style="vertical-align: middle">
 									    	{% if s.following == 1 %}
-											    <button name="{{s.gid}}" type="button" class="btn btn-info" onclick="toggleFollowButton({{me.my_gid}}, {{ s.gid }})">
+											    <button name="{{s.gid}}" type="button" class="btn btn-success" onclick="toggleFollowButton({{me.my_gid}}, {{ s.gid }})">
 											      <span name="{{s.gid}}" class="glyphicon glyphicon-user">Following</span> 
 											    </button>
 											{% else %}
@@ -753,7 +809,7 @@
 									</div>	
 
 
-								{% else %}
+								{% elif s.private != 1 %}
 								<div id="search_{{ s.gid }}" class="modal fade" role="dialog" style="padding-top:40px">
 									  <div class="modal-dialog">
 
@@ -763,12 +819,16 @@
 										 
 											<h4 class="modal-title">
 											{% if s.listening_status == 1 %}
-												{% if s.listening_id != me.my_gid %}
-													{{ s.name }} listening to 
-													<font face="verdana" color="green">{{ s.listening_name }}</font>
+												{% if s.anonymous == 1 %}
+													{{ s.name }} listening anonymously
 												{% else %}
-													{{ s.name }} listening to 
-													<font face="verdana" color="green">You</font>
+													{% if s.listening_id != me.my_gid %}
+														{{ s.name }} listening to 
+														<font face="verdana" color="green">{{ s.listening_name }}</font>
+													{% else %}
+														{{ s.name }} listening to 
+														<font face="verdana" color="green">You</font>
+													{% endif %}
 												{% endif %}
 												<button type="button" class="close" data-dismiss="modal">&times;</button>
 											{% elif s.playing == 1 %}
@@ -787,7 +847,7 @@
 										  <div class="modal-body">
 											<img src={{ s.prof_pic }} class="img-circle" height="15%" width="15%" style="vertical-align: middle">
 									    	{% if s.following == 1 %}
-											    <button name="{{s.gid}}" type="button" class="btn btn-info" onclick="toggleFollowButton({{me.my_gid}}, {{ s.gid }})">
+											    <button name="{{s.gid}}" type="button" class="btn btn-success" onclick="toggleFollowButton({{me.my_gid}}, {{ s.gid }})">
 											      <span name="{{s.gid}}" class="glyphicon glyphicon-user">Following</span> 
 											    </button>
 											{% else %}
@@ -798,19 +858,25 @@
 											{% if s.listening_status == 1 %}
 												<span class="glyphicon glyphicon-arrow-right" aria-hidden="true" style="font-size: 3.0em; vertical-align: middle"></span>
 
-												<img src={{ s.listening_prof }} class="img-circle" height="15%" width="15%" style="vertical-align: middle">
-									    	{% if s.following == 1 %}
-											    <button name="{{s.gid}}" type="button" class="btn btn-info" onclick="toggleFollowButton({{me.my_gid}}, {{ s.gid }})">
-											      <span name="{{s.gid}}" class="glyphicon glyphicon-user">Following</span> 
-											    </button>
-											{% else %}
-											    <button name="{{s.gid}}" type="button" class="btn btn-default" onclick="toggleFollowButton({{me.my_gid}}, {{ s.gid }})">
-											      <span name="{{s.gid}}" class="glyphicon glyphicon-user">Follow</span> 
-											    </button>
-											{% endif %}
+												{% if s.anonymous == 1 %}
+													<img src="/static/images/anon.png" class="img-circle" height="15%" width="15%" style="vertical-align: middle">
+												{% else %}
+													<img src={{ s.listening_prof }} class="img-circle" height="15%" width="15%" style="vertical-align: middle">
+													{% if s.listening_gid != me.my_gid %}
+												    	{% if s.following == 1 %}
+														    <button name="{{s.gid}}" type="button" class="btn btn-success" onclick="toggleFollowButton({{me.my_gid}}, {{ s.listening_gid }})">
+														      <span name="{{s.gid}}" class="glyphicon glyphicon-user">Following</span> 
+														    </button>
+														{% else %}
+														    <button name="{{s.gid}}" type="button" class="btn btn-default" onclick="toggleFollowButton({{me.my_gid}}, {{ s.listening_gid }})">
+														      <span name="{{s.gid}}" class="glyphicon glyphicon-user">Follow</span> 
+														    </button>
+														{% endif %}
+													{% endif %}
+												{% endif %}
 											{% endif %}
 										  </div>
-										  {% if s.listening_id != me.my_gid %}
+										  {% if s.listening_id != me.my_gid and s.anonymous != 1 %}
 
 										  <div class="modal-footer">
 										 	 <form class="form-inline" name="tune_form" action="/tune_in" method = "POST" onsubmit="return validateForm(this)">
@@ -819,12 +885,7 @@
 										 	 {% else %}
 										 	 	<input type="hidden" name="tune_in_their_gid" value={{ s.gid }}><input type="hidden" name="tune_in_my_gid" value={{ me.my_gid }}>
 										 	 {% endif %}
-												  <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect" name="device_select" required>
-													<option hidden value="no device" >Select Device</option>
-													{% for d in devices %}
-													<option value = {{ d.device_id }}>{{ d.device_name }} </option>
-													{% endfor %}
-												  </select>
+
 
 												  <!--	
 												  <label class="custom-control custom-checkbox mb-2 mr-sm-2 mb-sm-0">
@@ -846,7 +907,6 @@
 												{% endif %}
 												</form>
 
-												 <span style="float:left"> Don't see your device? First open Spotify then <a href="/refresh_devices">refresh</a></span>
 										  </div>
 
 										  {% endif %}

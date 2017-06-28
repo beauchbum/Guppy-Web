@@ -68,10 +68,15 @@ def make_session_permanent():
 
 @app.route("/", methods=["POST", "GET"])
 def index():
-
+    search = False
+    if "search_term" in session:
+        print "SEARCH"
+        search = True
+        search_term = session["search_term"] + "%"
+        print search_term
+        session.pop('search_term', None)
     if "sid" in session:
         following = []
-        search = False
         search_results = []
         me = {}
         my_devices = []
@@ -90,8 +95,9 @@ def index():
             my_song = user['song']
             my_artist = user['artist']
             my_playing = user['playing']
+            private = int(user["private"])
             listening_gid = user["id"]
-            me = {"my_gid":my_gid, "fb_token_valid":fb_token_valid, "my_prof_pic":my_prof_pic, "my_song":my_song, "my_artist": my_artist, "my_playing":my_playing, "listening_gid": listening_gid}
+            me = {"my_gid":my_gid, "fb_token_valid":fb_token_valid, "my_prof_pic":my_prof_pic, "my_song":my_song, "my_artist": my_artist, "my_playing":my_playing, "listening_gid": listening_gid, "private": private}
             listening = []
 
             url = "http://" + IP + "/get_listeners.php?gid=%s" % (my_gid)
@@ -105,9 +111,10 @@ def index():
                         my_listener_name = l['fb_name']
                     my_listener_gid = l['gid']
                     my_listener_prof_pic = l['prof_pic']
+                    my_listener_anon = int(l['anonymous'])
                     if my_listener_prof_pic == "":
                         my_listener_prof_pic = l['fb_prof_pic']
-                    my_listeners.append({"gid":my_listener_gid, "name":my_listener_name, "prof_pic":my_listener_prof_pic, "following":int(l["following"])})
+                    my_listeners.append({"gid":my_listener_gid, "name":my_listener_name, "prof_pic":my_listener_prof_pic, "anonymous":my_listener_anon, "following":int(l["following"])})
 
 
 
@@ -166,45 +173,52 @@ def index():
                     following_listening_id = u["listening_id"]
                     following_listening_status = 0
                     following_listener = 0
+                    following_anon = 0
+                    following_private = int(u["private"])
+
                     if following_listening_id is not None:
                         following_listening_status = 1
                         following_listener = int(u["following_listener"])
+                        following_anon = int(u["anonymous"])
+
 
                     following_listening_name =u["listening_name"]
                     following_listening_prof = u["listening_prof"]
                     following.append({"gid":following_gid, "name":following_name, "prof_pic":following_prof_pic, "prof_url":following_prof_url, "artist":following_artist, "song":following_song, "playing":following_playing,
                                           "listening":following_listening, "listening_status": following_listening_status, "following":int(u["following"]),
-                                            "following_listener":following_listener, "listening_gid": following_listening_id, "listening_name":following_listening_name, "listening_prof":following_listening_prof})
-                if "search" in session:
-                    if session["search"] == True:
-                        search = session["search"]
-                        search_term = session["search_term"] + "%"
-                        session.pop('search', None)
-                        session.pop('search_term', None)
-                        url = "http://" + IP + "/search_users.php?search_term=%s&my_gid=%s" % (search_term,my_gid)
+                                            "following_listener":following_listener, "listening_gid": following_listening_id, "listening_name":following_listening_name,
+                                            "listening_prof":following_listening_prof, "anonymous": following_anon, "private": following_private})
+                if search:
+                    url = "http://" + IP + "/search_users.php?search_term=%s&my_gid=%s" % (search_term,my_gid)
+                    try:
                         result = urllib2.urlopen(url)
                         data = json.load(result)
 
                         if data["success"] == 1:
                             users = data["users"]
                             for u in users:
-                                name = u["name"]
-                                if name == "None":
-                                    name = u["fb_name"]
-                                prof_pic = u["prof_pic"]
-                                if prof_pic == "":
-                                    prof_pic = u["fb_prof_pic"]
-                                search_listening_status = 0
-                                search_following_listener = 0
-                                if u["listening_id"] is not None:
-                                    search_listening_status = 1
-                                    search_following_listener = int(u["following_listener"])
-                                search_result = {"gid":u["guppy_id"], "name":name, "song":u["song"], "artist":u["artist"], "uri":u["uri"], "playing":u["playing"], "prof_pic":prof_pic, "following":int(u["following"]),
-                                                 "listening":int(u["listening"]), "listening_status":search_listening_status, "listening_id":u["listening_id"], "listening_name":u["listening_name"],
-                                                 "following_listener":search_following_listener, "listening_prof":u["listening_prof"]}
-                                search_results.append(search_result)
+                                if u["guppy_id"] != my_gid:
+                                    name = u["name"]
+                                    if name == "None":
+                                        name = u["fb_name"]
+                                    prof_pic = u["prof_pic"]
+                                    if prof_pic == "":
+                                        prof_pic = u["fb_prof_pic"]
+                                    search_listening_status = 0
+                                    search_following_listener = 0
+                                    search_anonymous = 0
+                                    if u["listening_id"] is not None:
+                                        search_listening_status = 1
+                                        search_following_listener = int(u["following_listener"])
+                                        search_anonymous = int(u["anonymous"])
+                                    search_result = {"gid":u["guppy_id"], "name":name, "song":u["song"], "artist":u["artist"], "uri":u["uri"], "playing":u["playing"], "prof_pic":prof_pic, "following":int(u["following"]),
+                                                     "listening":int(u["listening"]), "listening_status":search_listening_status, "listening_gid":u["listening_id"], "listening_name":u["listening_name"],
+                                                     "following_listener":search_following_listener, "listening_prof":u["listening_prof"], "anonymous": search_anonymous, "private": int(u["private"])}
 
-        print search
+                                    search_results.append(search_result)
+                    except Excepton, e:
+                        print e
+
         return render_template("index.html", logged=True, following=following, me=me, devices=devices, listening=listening, my_listeners=my_listeners, search=search, search_results=search_results)
     else:
         following = []
@@ -362,6 +376,19 @@ def logout():
     session.pop('sid', None)
     return redirect(url_for('index'))
 
+@app.route('/go_private')
+def go_private():
+    gid = session["gid"]
+    url = "http://" + IP + "/go_private.php?gid=%s" % (gid)
+    urllib2.urlopen(url)
+    return redirect(url_for('index'))
+
+@app.route('/go_public')
+def go_public():
+    gid = session["gid"]
+    url = "http://" + IP + "/go_public.php?gid=%s" % (gid)
+    urllib2.urlopen(url)
+    return redirect(url_for('index'))
 
 @app.route("/follow", methods=["GET"])
 def follow():
