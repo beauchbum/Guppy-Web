@@ -138,15 +138,55 @@
 		    xmlHttp.open( "GET", "/follow?my_gid=" + my_gid + "&their_gid=" + their_gid, true ); // false for synchronous request
 		    xmlHttp.send( null );
 		    var toggles = document.getElementsByName("toggle_" + their_gid);
-		    return xmlHttp.responseText;
+		    return xmlHttp.responseText;	
 		}
-
-
-
 
 	}
 
+	var interval = 10000;
+	function LoadFollowers()
+	{
+		$.ajax({
+		  type : 'POST',
+		  url : "/ajax_test",
+		  contentType: 'application/json;charset=UTF-8',
+		  success: function (data){
+		  	
+				for (i = 0; i < data.following.length; i++) {
+					if (data.following[i]["private"] == 1)
+					{
+						$("div[name=" + data.following[i]["gid"] + "_colright]").html("");	
+						$("div[name=" + data.following[i]["gid"] + "_colcenter]").html("<div style='font-size: 1.5em; padding-left:10px; vertical-align: top;'>" + data.following[i]['name'] + "</div><div style='font-size: 1.0em; padding-left:15px; vertical-align: bottom;'>Private Session</div>");
+					}
 
+					else
+					{
+						var new_string = data.following[i]["song"] + " by " + data.following[i]["artist"];
+						$("div[name=" + data.following[i]["gid"] + "]").text(new_string);
+						if(data.following[i]["playing"] == 1){
+							/*
+							$("img[name=" + data.result[i]["gid"] + "]").css('display', 'block');
+							$("img[name=" + data.result[i]["gid"] + "]").attr('src',"/static/images/green.gif");
+							*/
+							$("div[name=" + data.following[i]["gid"] + "_colright]").html("<img name=" + data.following[i]['gid'] + "src='/static/images/green.gif' style='border:none; display:block; margin:0 auto; height:35%; width:35%;'>");
+
+						}
+						else{
+							$("div[name=" + data.following[i]["gid"] + "_colright]").html("Inactive");
+
+						}
+					}
+
+				}
+			
+			},
+	      complete: function (data) {
+                // Schedule the next
+                setTimeout(LoadFollowers, interval);
+        	}
+		});
+	}
+	setTimeout(LoadFollowers, interval);
 
 
 	</script>
@@ -293,7 +333,7 @@
 								    <div id="colwrap">
 								      <div id="colRight">
 								      {% if f.playing == 1 %}
-								      	<img src="/static/images/green.gif" style="border:none; display:block; margin:0 auto; height:30%; width:30%;">
+								      	<img src="/static/images/green.gif" style="border:none; display:block; margin:0 auto; height:35%; width:35%;">
 								     {% elif f.playing == 0 %}
 								      	Inactive
 								      {% endif %}
@@ -301,7 +341,7 @@
 								      <div id="colCenter">
 										<div style="color: black;font-size: 1.5em; padding-left:10px; vertical-align: top;">{{ f.name }}</div>
 										
-										<div style="color: black; font-size: 1.0em; padding-left:15px; vertical-align: bottom;">{{ f.song }} by {{f.artist}}</div>
+										<div name="{{ f.gid }}" style="color: black; font-size: 1.0em; padding-left:15px; vertical-align: bottom;">{{ f.song }} by {{f.artist}}</div>
 
 								      </div>  
 								    </div>
@@ -368,23 +408,24 @@
 								  	<img src={{ f.prof_pic }} style="vertical-align: middle; height:100%; width:100%;">
 								  </div>
 								    <div id="colwrap">
-								      <div id="colRight">
+								      <div name="{{ f.gid }}_colright" id="colRight">
 								      {% if f.private != 1 %}
 									      {% if f.listening_status == 1 %}
 									      	{% if f.anonymous == 1 %}
-									      		<img src="/static/images/anon.png" class="img-circle" style="border:none; display:block; margin:0 auto; height:50%; width:50%;">
+									      		<img name="{{ f.gid }}" src="/static/images/anon.png" class="img-circle" style="border:none; display:block; margin:0 auto; height:35%; width:35%;">
 									      	{% else %}
-									      		<img src={{ f.listening_prof }} class="img-circle" style="border:none; display:block; margin:0 auto; height:50%; width:50%;">
+									      		<img name="{{ f.gid }}" src={{ f.listening_prof }} class="img-circle" style="border:none; display:block; margin:0 auto; height:35%; width:35%;">
 									      	{% endif %}
 										  {% elif f.playing == 1 %}
-									      	<img src="/static/images/green.gif" style="border:none; display:block; margin:0 auto; height:30%; width:30%;">
+									      	<img name="{{ f.gid }}" src="/static/images/green.gif" style="border:none; display:block; 
+									      		margin:0 auto; height:35%; width:35%;">
 									      {% elif f.playing == 0 %}
-									      	Inactive
+											Inactive								      
 									      {% endif %}
 									  {% endif %}
 
 								      </div>
-								      <div id="colCenter">
+								      <div name ="{{ f.gid }}_colcenter" id="colCenter">
 
 								      {% if f.private == 1 %}
 								      	<div style="font-size: 1.5em; padding-left:10px; vertical-align: top;">{{ f.name }}</div>
@@ -395,7 +436,7 @@
 											{% if f.anonymous == 1 %}
 												<div style="color: black; font-size: 1.0em; padding-left:15px; vertical-align: bottom;">Listening anonymously</div>
 											{% else %}
-												<div style="color: black; font-size: 1.0em; padding-left:15px; vertical-align: bottom;">{{ f.song }} by {{f.artist}}</div>
+												<div name="{{ f.gid }}" style="color: black; font-size: 1.0em; padding-left:15px; vertical-align: bottom;">{{ f.song }} by {{f.artist}}</div>
 											{% endif %}
 							
 									  {% endif %}
@@ -547,11 +588,11 @@
 											</div>
 								      	{% else %}
 											<div style="padding-left:15px; margin-bottom: 10px; height:10vh; position:relative;">
-												<span style="font-size: 1.6em; position: absolute; bottom: 0; white-space: nowrap;">{{ me.my_song }}</span>
+												<span name="{{ me.my_gid }}" style="font-size: 1.6em; position: absolute; bottom: 0; white-space: nowrap;">{{ me.my_song }}</span>
 											</div>
 											
 											<div style="padding-left:20px; height:10vh;">
-												<span style="font-size: 1.2em; white-space: nowrap;">{{ me.my_artist }}</span>
+												<span name="{{ me.my_gid }}" style="font-size: 1.2em; white-space: nowrap;">{{ me.my_artist }}</span>
 											</div>
 										{% endif %}
 
@@ -570,7 +611,7 @@
 								    <div id="colwrap">
 								      <div id="colRight">
 								      {% if following[0].playing == 1 %}
-								      	<img src="/static/images/green.gif" style="border:none; display:block; margin:0 auto; height:30%; width:30%;">
+								      	<img src="/static/images/green.gif" style="border:none; display:block; margin:0 auto; height:35%; width:35%;">
 								      {% elif following[0].playing == 0 %}
 								      	Inactive
 								      {% endif %}
@@ -578,7 +619,7 @@
 								      <div id="colCenter">
 										<div style="color: black;font-size: 1.5em; padding-left:10px; vertical-align: top;">{{ following[0].name }}</div>
 										
-										<div style="color: black; font-size: 1.0em; padding-left:15px; vertical-align: bottom;">{{ following[0].song }} by {{following[0].artist}}</div>
+										<div name={{ following[0].gid }} style="color: black; font-size: 1.0em; padding-left:15px; vertical-align: bottom;">{{ following[0].song }} by {{following[0].artist}}</div>
 
 								      </div>  
 								    </div>

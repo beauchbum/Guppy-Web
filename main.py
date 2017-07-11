@@ -1,5 +1,5 @@
 import json
-from flask import Flask, request, redirect, g, render_template, make_response, url_for, session, flash
+from flask import Flask, request, redirect, g, render_template, make_response, url_for, session, flash, jsonify
 import requests
 import requests_toolbelt.adapters.appengine
 
@@ -69,6 +69,8 @@ def make_session_permanent():
 @app.route("/", methods=["POST", "GET"])
 def index():
     search = False
+    following_gids = []
+
     if "search_term" in session:
         print "SEARCH"
         search = True
@@ -76,6 +78,7 @@ def index():
         print search_term
         session.pop('search_term', None)
     if "sid" in session:
+        session["following"] = []
         following = []
         search_results = []
         me = {}
@@ -158,7 +161,9 @@ def index():
                 following = []
                 users = data['users']
                 for u in users:
+                    temp_user = {}
                     following_gid = u['guppy_id']
+                    following_gids.append(following_gid)
                     following_name = u['name']
                     if following_name == "None":
                         following_name = u['fb_name']
@@ -176,18 +181,23 @@ def index():
                     following_anon = 0
                     following_private = int(u["private"])
 
+
+
                     if following_listening_id is not None:
                         following_listening_status = 1
                         following_listener = int(u["following_listener"])
                         following_anon = int(u["anonymous"])
 
-
                     following_listening_name =u["listening_name"]
                     following_listening_prof = u["listening_prof"]
+
+
+
                     following.append({"gid":following_gid, "name":following_name, "prof_pic":following_prof_pic, "prof_url":following_prof_url, "artist":following_artist, "song":following_song, "playing":following_playing,
                                           "listening":following_listening, "listening_status": following_listening_status, "following":int(u["following"]),
                                             "following_listener":following_listener, "listening_gid": following_listening_id, "listening_name":following_listening_name,
                                             "listening_prof":following_listening_prof, "anonymous": following_anon, "private": following_private})
+
                 if search:
                     url = "http://" + IP + "/search_users.php?search_term=%s&my_gid=%s" % (search_term,my_gid)
                     try:
@@ -219,6 +229,7 @@ def index():
                     except Excepton, e:
                         print e
 
+        session["following"] = following_gids
         return render_template("index.html", logged=True, following=following, me=me, devices=devices, listening=listening, my_listeners=my_listeners, search=search, search_results=search_results)
     else:
         following = []
@@ -420,6 +431,71 @@ def search():
             session["search_term"] = search_term
 
     return redirect(url_for('index'))
+
+@app.route("/ajax_test", methods=["POST"])
+def ajax_test():
+    following = []
+    if "sid" in session:
+        url = "http://" + IP + "/get_guppy_id_2.php?spotify_id=%s" % (session['sid'])
+        result = urllib2.urlopen(url)
+        data = json.load(result)
+        if data['success'] == 1:
+            user = data['user'][0]
+            my_gid = user['guppy_id']
+            session["gid"] = my_gid
+            fb_token_valid = int(user['fb_token_valid'])
+            my_song = user['song']
+            my_artist = user['artist']
+            my_playing = user['playing']
+            private = int(user["private"])
+            listening_gid = user["id"]
+            me = {"my_gid": my_gid, "fb_token_valid": fb_token_valid, "my_song": my_song,
+                  "my_artist": my_artist, "my_playing": my_playing, "listening_gid": listening_gid, "private": private}
+
+    if "gid" in session:
+        my_gid = session["gid"]
+        if "following" in session:
+            following_gids = session["following"]
+            url = "http://" + IP + "/get_following_2.php?current_user_id=%s" % (my_gid)
+            result = urllib2.urlopen(url)
+            data = json.load(result)
+
+            if data['success'] == 1:
+                users = data['users']
+                for u in users:
+                    following_gid = u['guppy_id']
+                    if following_gid in following_gids:
+                        following_name = u['name']
+                        following_artist = u['artist']
+                        following_song = u['song']
+                        following_playing = int(u["playing"])
+                        following_listening = int(u["listening"])
+                        following_listening_id = u["listening_id"]
+                        following_listening_status = 0
+                        following_listener = 0
+                        following_anon = 0
+                        following_private = int(u["private"])
+
+                        if following_listening_id is not None:
+                            following_listening_status = 1
+                            following_listener = int(u["following_listener"])
+                            following_anon = int(u["anonymous"])
+
+                        following_listening_name = u["listening_name"]
+                        following_listening_prof = u["listening_prof"]
+
+                        following.append({"gid": following_gid, "name": following_name, "artist": following_artist,
+                                          "song": following_song, "playing": following_playing,
+                                          "listening": following_listening,
+                                          "listening_status": following_listening_status,
+                                          "following": int(u["following"]),
+                                          "following_listener": following_listener,
+                                          "listening_gid": following_listening_id,
+                                          "listening_name": following_listening_name,
+                                          "listening_prof": following_listening_prof, "anonymous": following_anon,
+                                          "private": following_private})
+
+    return jsonify(following = following, me = me )
 
 
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
