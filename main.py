@@ -328,15 +328,18 @@ def tune_in():
             {'my_gid': str(tune_in_my_gid), 'their_gid': str(tune_in_their_gid),'anonymous': str(tune_in_anonymous)})
         result = urllib2.urlopen(url, temp_data)
         data = json.load(result)
-        if data["success"] == 0:
-
+        if data["success"] == 1:
+            flash(u'Success! Playing on %s' % (str(data["device_name"])), category='success')
+        elif data["success"] == 0:
             if data["error"] == 404 or data["error"] == 403 or data["error"] == -1:
                 flash(u'Tried to play, but there is no active device. Open Spotify.', category='danger')
             else:
                 print "ERROR TUNING IN" + str(data["error"])
-        else:
-            print data
-            flash(u'Success! Playing on %s' % (str(data["device_name"])), category='success')
+        elif data["success"] == -1:
+            if data["error"] == "private":
+                flash(u'Sorry, unable to join because [name] is in a private session', category='danger')
+            elif data["error"] == "anonymous":
+                flash(u'Sorry, unable to join because [name] is listening to another user anonymously', category='danger')
 
 
 
