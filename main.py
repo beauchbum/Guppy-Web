@@ -62,7 +62,6 @@ auth_query_parameters = {
 
 @app.before_request
 def make_session_permanent():
-    print "session made perm"
     session.permanent = True
 
 
@@ -466,6 +465,8 @@ def ajax_test():
                     following_gid = u['guppy_id']
                     if following_gid in following_gids:
                         following_name = u['name']
+                        if following_name == "None":
+                            following_name = u['fb_name']
                         following_artist = u['artist']
                         following_song = u['song']
                         following_playing = int(u["playing"])
@@ -475,6 +476,7 @@ def ajax_test():
                         following_listener = 0
                         following_anon = 0
                         following_private = int(u["private"])
+
 
                         if following_listening_id is not None:
                             following_listening_status = 1
@@ -495,7 +497,7 @@ def ajax_test():
                                           "listening_prof": following_listening_prof, "anonymous": following_anon,
                                           "private": following_private})
 
-    return jsonify(following = following, me = me )
+    return jsonify(following = following, me = me)
 
 
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'

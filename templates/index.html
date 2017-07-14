@@ -152,15 +152,34 @@
 		  contentType: 'application/json;charset=UTF-8',
 		  success: function (data){
 		  	
+		  		$("span[name=" + data.me["my_gid"] + "_song]").text(data.me["my_song"]);
+				$("span[name=" + data.me["my_gid"] + "_artist]").text(data.me["my_artist"]);
+				if (data.following[0]["listening"] == 0){
+					$("div[name=my_listeners]").html("<div style='text-align:center; font-size:1.5em' class='list-group-item list-group-item-action flex-column align-items-start'>No Listeners Yet!</div>");
+				}
+
 				for (i = 0; i < data.following.length; i++) {
-					if (data.following[i]["private"] == 1)
-					{
+					$("a[name=" + data.following[i]['gid'] + "]").attr('data-order', i);
+					if (data.following[i]["private"] == 1){
 						$("div[name=" + data.following[i]["gid"] + "_colright]").html("");	
 						$("div[name=" + data.following[i]["gid"] + "_colcenter]").html("<div style='font-size: 1.5em; padding-left:10px; vertical-align: top;'>" + data.following[i]['name'] + "</div><div style='font-size: 1.0em; padding-left:15px; vertical-align: bottom;'>Private Session</div>");
-					}
+						$("div[name=" + data.following[i]['gid'] + "_modal_footer]").html("");
+						$("h4[name=" + data.following[i]['gid'] + "]").html("<font face='verdana'>Private Session</font>");
 
-					else
-					{
+					}
+					else{
+						if (data.following[i]["listening"] == 1){
+							$("a[name=" + data.following[i]['gid'] + "]").css('background-color', '#79c3f7');
+							$("a[name=" + data.following[i]['gid'] + "]").attr('data-order', i);
+							$("div[name=" + data.following[i]['gid'] + "_modal_footer]").html("<div class='form-group row'> <form name='tune_out_form' action='/tune_out' method = 'POST'><input type='hidden' name='tune_out_my_gid' value=" + data.me["my_gid"] + " onsubmit='setTimeout(function () { window.location.reload(); }, 10)''><div class='col-md-3'><span><button type='submit' class='btn btn-warning'> Tune Out</button></span></div></form></div>");
+							
+						}
+						else{
+							$("a[name=" + data.following[i]['gid'] + "]").css('background-color', '#ffffff');
+							$("div[name=" + data.following[i]['gid'] + "_modal_footer]").html("<form class='form-inline' name='tune_form' action='/tune_in' method = 'POST' onsubmit='return validateForm(this)'><input type='hidden' name='tune_in_their_gid' value=" + data.following[i]['gid'] + "><input type='hidden' name='tune_in_my_gid' value=" + data.me['my_gid'] + "><label class='btn'><input type='checkbox' hidden name='anonymous'><i class='fa fa-square-o fa-2x'></i><i class='fa fa-check-square-o fa-2x'></i><span style='font-size: 1.2em;'> Anonymous?</span></label><button type='submit' class='btn btn-primary' style='font-size:1.0em;'>Tune In</button></form>");
+						}
+						
+
 						var new_string = data.following[i]["song"] + " by " + data.following[i]["artist"];
 						$("div[name=" + data.following[i]["gid"] + "]").text(new_string);
 						if(data.following[i]["playing"] == 1){
@@ -168,16 +187,39 @@
 							$("img[name=" + data.result[i]["gid"] + "]").css('display', 'block');
 							$("img[name=" + data.result[i]["gid"] + "]").attr('src',"/static/images/green.gif");
 							*/
-							$("div[name=" + data.following[i]["gid"] + "_colright]").html("<img name=" + data.following[i]['gid'] + "src='/static/images/green.gif' style='border:none; display:block; margin:0 auto; height:35%; width:35%;'>");
+							$("div[name=" + data.following[i]["gid"] + "_colright]").html("<img name=" + data.following[i]['gid'] + " src='/static/images/green.gif' style='border:none; display:block; margin:0 auto; height:35%; width:35%;'>");
+							$("h4[name=" + data.following[i]['gid'] + "]").html(data.following[i]['name'] + " - <font face='verdana' color='green'>Active</font>");
 
 						}
 						else{
 							$("div[name=" + data.following[i]["gid"] + "_colright]").html("Inactive");
+							$("h4[name=" + data.following[i]['gid'] + "]").html(data.following[i]['name'] + " - <font face='verdana' color='red'>Inactive</font>");
 
 						}
+						
 					}
 
 				}
+
+				var $list = document.getElementsByClassName('list-group')[0];
+			    var listGroupA = $list.getElementsByTagName('a');
+			    var $listGroupA = [];
+			    for (var i = 0; i < listGroupA.length; ++i) {
+			        $listGroupA.push(listGroupA[i]);
+			    }
+			    $listGroupA.sort(function (a, b) {
+
+			        return 1 * (a.getAttribute('data-order') - b.getAttribute('data-order'));
+
+			    });
+			    for (var i = 0; i < $listGroupA.length; i++) {
+			        $list.removeChild($listGroupA[i]);
+			    }
+			    for (var i = 0; i < $listGroupA.length; i++) {
+			        $list.appendChild($listGroupA[i]);
+			    }
+
+
 			
 			},
 	      complete: function (data) {
@@ -324,85 +366,12 @@
 
 
 						{% for f in following %}
-						{% if f.listening == 1 %}
-							<a data-toggle="modal" href="#myModal" class="list-group-item list-group-item-action flex-column align-items-start active" style="background-color: #79C3F7; border-color: #79C3F7;">
-								<div id="parent" style="width:100%">  
-								  <div id="colLeft">								
-								  	<img src={{ f.prof_pic }} style="vertical-align: middle; height:100%; width:100%;">
-								  </div>
-								    <div id="colwrap">
-								      <div id="colRight">
-								      {% if f.playing == 1 %}
-								      	<img src="/static/images/green.gif" style="border:none; display:block; margin:0 auto; height:35%; width:35%;">
-								     {% elif f.playing == 0 %}
-								      	Inactive
-								      {% endif %}
-								      </div>
-								      <div id="colCenter">
-										<div style="color: black;font-size: 1.5em; padding-left:10px; vertical-align: top;">{{ f.name }}</div>
-										
-										<div name="{{ f.gid }}" style="color: black; font-size: 1.0em; padding-left:15px; vertical-align: bottom;">{{ f.song }} by {{f.artist}}</div>
-
-								      </div>  
-								    </div>
-								</div>		
-
-							  </a>
-							  
-							  <div id="myModal" class="modal fade" role="dialog" style="padding-top:40px">
-									  <div class="modal-dialog">
-
-										<!-- Modal content-->
-										<div class="modal-content">
-										  <div class="modal-header">
-										 
-											<h4 class="modal-title">
-												{% if f.playing == 1 %}
-													{{ f.name }} - 
-													<font face="verdana" color="green">Active</font>
-													<button type="button" class="close" data-dismiss="modal">&times;</button>
-												{% elif f.playing == 0 %}
-													{{ f.name }} - 
-													<font face="verdana" color="red">Inactive</font>
-													<button type="button" class="close" data-dismiss="modal">&times;</button>
-												{% endif %}
-											</h4>
-											
-
-										  </div>
-										  <div class="modal-body">
-											<img src={{ f.prof_pic }} class="img-circle" height="90" width="90" style="vertical-align: middle">
-									    	{% if f.following == 1 %}
-											    <button name="{{f.gid}}" type="button" class="btn btn-success" onclick="toggleFollowButton({{me.my_gid}}, {{ f.gid }})">
-											      <span name="{{f.gid}}" class="glyphicon glyphicon-user">Following</span> 
-											    </button>
-											{% else %}
-											    <button name="{{f.gid}}" type="button" class="btn btn-default" onclick="toggleFollowButton({{me.my_gid}}, {{ f.gid }})">
-											      <span name="{{f.gid}}" class="glyphicon glyphicon-user">Follow</span> 
-											    </button>
-											{% endif %}
-										  </div>	
-										  <div class="modal-footer">
-											<div class="form-group row"> 
-
-											  <form name="tune_out_form" action="/tune_out" method = "POST"><input type="hidden" name="tune_out_my_gid" value={{ me.my_gid }} onsubmit="setTimeout(function () { window.location.reload(); }, 10)">
-
-
-											  <div class="col-md-3">
-												<span><button type="submit" class="btn btn-warning"> Tune Out</button></span>
-											  </div>
-											  
-											  </form>
-											</div>
-										  </div>
-										</div>
-
-									  </div>
-									</div>
-
+						
+							{% if f.listening == 1 %}
+								<a name="{{ f.gid }}" data-toggle="modal" href="#{{ f.gid }}" class="list-group-item list-group-item-action flex-column align-items-start" style="background-color: #79C3F7;">
 							{% else %}
-							<a data-toggle="modal" href="#{{ f.gid }}" class="list-group-item list-group-item-action flex-column align-items-start">
-
+								<a name="{{ f.gid }}" data-toggle="modal" href="#{{ f.gid }}" class="list-group-item list-group-item-action flex-column align-items-start" style="background-color: #ffffff";>
+							{% endif %}
 								<div id="parent" style="width:100%">  
 								  <div id="colLeft">								
 								  	<img src={{ f.prof_pic }} style="vertical-align: middle; height:100%; width:100%;">
@@ -447,11 +416,10 @@
 							  <div id="{{ f.gid }}" class="modal fade" role="dialog" style="padding-top:40px">
 									  <div class="modal-dialog">
 
-										<!-- Modal content-->
 										<div class="modal-content">
 										  <div class="modal-header">
 										 
-											<h4 class="modal-title">
+											<h4 name="{{ f.gid }}" class="modal-title">
 											{% if f.private == 1 %}
 												{{ f.name }} -
 												<font face="verdana">Private Session</font>
@@ -505,45 +473,40 @@
 											{% endif %}
 										  </div>
 										  {% if f.listening_gid != me.my_gid and f.anonymous != 1 and f.private != 1 %}
-										  <div class="modal-footer">
-										 	 <form class="form-inline" name="tune_form" action="/tune_in" method = "POST" onsubmit="return validateForm(this)">
-										 	 {% if f.listening_status == 1 %}
-										 	 	<input type="hidden" name="tune_in_their_gid" value={{ f.listening_id }}><input type="hidden" name="tune_in_my_gid" value={{ me.my_gid }}>
-										 	 {% else %}
-										 	 	<input type="hidden" name="tune_in_their_gid" value={{ f.gid }}><input type="hidden" name="tune_in_my_gid" value={{ me.my_gid }}>
-										 	 {% endif %}
-										 	 	<!--
-												  <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="inlineFormCustomSelect" name="device_select" required>
-													<option hidden value="no device" >Select Device</option>
-													{% for d in devices %}
-													<option value = {{ d.device_id }}>{{ d.device_name }} </option>
-													{% endfor %}
-												  </select>
-												-->
+										  <div name="{{ f.gid }}_modal_footer" class="modal-footer">
+										  	{% if f.listening == 1 %}
+										  		<div class="form-group row"> 
+												  <form name="tune_out_form" action="/tune_out" method = "POST"><input type="hidden" name="tune_out_my_gid" value={{ me.my_gid }} onsubmit="setTimeout(function () { window.location.reload(); }, 10)">
+												  <div class="col-md-3">
+													<span><button type="submit" class="btn btn-warning"> Tune Out</button></span>
+												  </div>
+												  
+												  </form>
+												</div>
+										 	
+											{% else %}
+ 												<form class="form-inline" name="tune_form" action="/tune_in" method = "POST" onsubmit="return validateForm(this)">
+											 	 {% if f.listening_status == 1 %}
+											 	 	<input type="hidden" name="tune_in_their_gid" value={{ f.listening_id }}><input type="hidden" name="tune_in_my_gid" value={{ me.my_gid }}>
+											 	 {% else %}
+											 	 	<input type="hidden" name="tune_in_their_gid" value={{ f.gid }}><input type="hidden" name="tune_in_my_gid" value={{ me.my_gid }}>
+											 	 {% endif %}
 
-												  <!--	
-												  <label class="custom-control custom-checkbox mb-2 mr-sm-2 mb-sm-0">
-												    <input type="checkbox" class="custom-control-input">
-												    <span class="custom-control-indicator"></span>
-												    <span class="custom-control-description">Anonymous</span>
-												  </label>
-												  -->
+													    <label class="btn">
+												          <input type="checkbox" hidden name='anonymous'><i class="fa fa-square-o fa-2x"></i><i class="fa fa-check-square-o fa-2x"></i><span style="font-size: 1.2em;"> Anonymous?</span>
+												        </label>
 
-												    <label class="btn">
-											          <input type="checkbox" hidden name='anonymous'><i class="fa fa-square-o fa-2x"></i><i class="fa fa-check-square-o fa-2x"></i><span style="font-size: 1.2em;"> Anonymous?</span>
-											        </label>
+	  
+													{% if f.listening_status == 1 %}
+													  	<button type="submit" class="btn btn-primary" style="font-size:1.0em;">Join</button>
+													{% else %}
+														<button type="submit" class="btn btn-primary" style="font-size:1.0em;">Tune In</button>
+													{% endif %}
+													</form>
+											{% endif %}
 
-  
-												{% if f.listening_status == 1 %}
-												  	<button type="submit" class="btn btn-primary" style="font-size:1.0em;">Join</button>
-												{% else %}
-													<button type="submit" class="btn btn-primary" style="font-size:1.0em;">Tune In</button>
-												{% endif %}
-												</form>
 
-												<!--
-												 <span style="float:left"> Don't see your device? First open Spotify then <a href="/refresh_devices">refresh</a></span>
-												 -->
+
 										  </div>
 
 										  {% endif %}
@@ -551,7 +514,6 @@
 
 									  </div>
 									</div>
-							{% endif %}
 						 {% endfor %}
 
 						</div>
@@ -563,14 +525,7 @@
 		<div id="menu1" class="tab-pane fade">
 			<section id="main" class="container">
 			<header style="margin-bottom: 2em;">
-			<!--
-				<div id="center_div" style="text-align: center">
-					<img class="img-circle" height=60% src={{ me.my_prof_pic }} alt="foo" />
-					<p align="center" style="margin-bottom: 0px; font-size:1.5em">{{ me.my_song }}</p>
-					<p align="center" style="margin-bottom: 10px;">{{ me.my_artist }}</p>
-				</div>
 
-			-->
 								<div id="center_div" style="overflow: hidden">  
 								  <div id="colLeft" style="height:17vh; width:17vh;">								
 								  	<img src={{ me.my_prof_pic }} class="img-circle" style="vertical-align: middle; height:100%; width:100%;">
@@ -588,11 +543,11 @@
 											</div>
 								      	{% else %}
 											<div style="padding-left:15px; margin-bottom: 10px; height:10vh; position:relative;">
-												<span name="{{ me.my_gid }}" style="font-size: 1.6em; position: absolute; bottom: 0; white-space: nowrap;">{{ me.my_song }}</span>
+												<span name="{{ me.my_gid }}_song" style="font-size: 1.6em; position: absolute; bottom: 0; white-space: nowrap;">{{ me.my_song }}</span>
 											</div>
 											
 											<div style="padding-left:20px; height:10vh;">
-												<span name="{{ me.my_gid }}" style="font-size: 1.2em; white-space: nowrap;">{{ me.my_artist }}</span>
+												<span name="{{ me.my_gid }}_artist" style="font-size: 1.2em; white-space: nowrap;">{{ me.my_artist }}</span>
 											</div>
 										{% endif %}
 
@@ -601,7 +556,7 @@
 								</div>
 
 			</header>
-					<div class="list-group" style="max-height:40vh; overflow: auto">
+					<div name="my_listeners" class="list-group" style="max-height:40vh; overflow: auto">
 					{% if following[0].listening ==1 %}
 							<a data-toggle="modal" href="#myListeningModal" class="list-group-item list-group-item-action flex-column align-items-start active" style="background-color: #79C3F7; border-color: #79C3F7;">
 								<div id="parent" style="width:100%">  
