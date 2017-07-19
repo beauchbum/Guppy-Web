@@ -6,7 +6,6 @@
 	html5up.net | @ajlkn
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 */
-	white-space:nowrap;
 
 /* Reset */
 
@@ -57,37 +56,7 @@
 		box-sizing: border-box;
 	}
 
-	#center_div {
-		margin: auto;
-		display:block;
-	    width: 100%;
-	    height: 20vh;
-	    
-	}
-
 /* Containers */
-
-	#parent {
-	  height:8vh;
-	}
-	#colLeft {
-	  height:8vh;
-	  width:8vh;
-	  float: left;
-	}
-	#colwrap{
-	    overflow:hidden;
-	}
-	#colCenter {
-	  height:8vh;
-	}
-	#colRight {
-	  height:8vh;
-	  width:8vh;
-	  float: right;
-	}
-
-
 
 	.container {
 		margin-left: auto;
@@ -141,8 +110,6 @@
 		}
 
 	}
-	
-
 
 	@media screen and (max-width: 1280px) {
 
@@ -2116,85 +2083,6 @@
 		padding: 0.75em 1em;
 	}
 
-
-label.btn span {
-  font-size: 1.5em ;
-}
-
-label input[type="radio"] ~ i.fa.fa-circle-o{
-    color: #c8c8c8;    display: inline;
-}
-label input[type="radio"] ~ i.fa.fa-dot-circle-o{
-    display: none;
-}
-label input[type="radio"]:checked ~ i.fa.fa-circle-o{
-    display: none;
-}
-label input[type="radio"]:checked ~ i.fa.fa-dot-circle-o{
-    color: #7AA3CC;    display: inline;
-}
-label:hover input[type="radio"] ~ i.fa {
-color: #7AA3CC;
-}
-
-label input[type="checkbox"] ~ i.fa.fa-square-o{
-    color: #c8c8c8;    display: inline;
-}
-label input[type="checkbox"] ~ i.fa.fa-check-square-o{
-    display: none;
-}
-label input[type="checkbox"]:checked ~ i.fa.fa-square-o{
-    display: none;
-}
-label input[type="checkbox"]:checked ~ i.fa.fa-check-square-o{
-    color: #7AA3CC;    display: inline;
-}
-label:hover input[type="checkbox"] ~ i.fa {
-color: #7AA3CC;
-}
-
-div[data-toggle="buttons"] label.active{
-    color: #7AA3CC;
-}
-
-div[data-toggle="buttons"] label {
-display: inline-block;
-padding: 6px 12px;
-margin-bottom: 0;
-font-size: 14px;
-font-weight: normal;
-line-height: 2em;
-text-align: left;
-white-space: nowrap;
-vertical-align: top;
-cursor: pointer;
-background-color: none;
-border: 0px solid 
-#c8c8c8;
-border-radius: 3px;
-color: #c8c8c8;
--webkit-user-select: none;
--moz-user-select: none;
--ms-user-select: none;
--o-user-select: none;
-user-select: none;
-}
-
-div[data-toggle="buttons"] label:hover {
-color: #7AA3CC;
-}
-
-div[data-toggle="buttons"] label:active, div[data-toggle="buttons"] label.active {
--webkit-box-shadow: none;
-box-shadow: none;
-}
-
-
-
-
-
-	/*
-
 	input[type="checkbox"],
 	input[type="radio"] {
 		-moz-appearance: none;
@@ -2265,9 +2153,6 @@ box-shadow: none;
 	input[type="checkbox"] + label:before {
 		border-radius: 6px;
 	}
-	*/
-
-
 
 	input[type="radio"] + label:before {
 		border-radius: 100%;
@@ -2377,7 +2262,7 @@ box-shadow: none;
 				}
 
 		.box.special {
-			text-align: left-side;
+			text-align: center;
 		}
 
 		.box .image.featured {
@@ -2477,8 +2362,6 @@ box-shadow: none;
 			}
 
 /* Image */
-
-
 
 	.image {
 		border-radius: 6px;
@@ -3146,8 +3029,8 @@ box-shadow: none;
 
 	#banner {
 		background-attachment: scroll,							fixed;
-		background-color: #111;
-		background-image: url("../images/overlay.png"), url("../images/chicago_beach.jpg");
+		background-color: #666;
+		background-image: url("images/overlay.png"), url("../../images/banner.jpg");
 		background-position: top left,						center center;
 		background-repeat: repeat,							no-repeat;
 		background-size: auto,							cover;
@@ -3157,7 +3040,7 @@ box-shadow: none;
 	}
 
 		#banner :last-child {
-			margin-bottom: 50;
+			margin-bottom: 0;
 		}
 
 		#banner h2, #banner h3, #banner h4, #banner h5, #banner h6 {
@@ -3211,12 +3094,12 @@ box-shadow: none;
 /* Main */
 
 	#main {
-		padding: 1em 0;
+		padding: 4em 0;
 	}
 
 		#main > header {
-			
-			margin: 0 0 0 0;
+			text-align: center;
+			margin: 0 0 3em 0;
 		}
 
 			#main > header h2 {
@@ -3410,14 +3293,13 @@ box-shadow: none;
 
 /* Narrower */
 
-	/*
-
 	#navPanel, #navButton {
 		display: none;
 	}
 
 	@media screen and (max-width: 840px) {
 
+		/* Basic */
 
 			html, body {
 				overflow-x: hidden;
@@ -3431,6 +3313,7 @@ box-shadow: none;
 				display: none;
 			}
 
+		/* Section/Article */
 
 			header br {
 				display: none;
@@ -3440,6 +3323,7 @@ box-shadow: none;
 				padding: 0 4em;
 			}
 
+		/* Box */
 
 			.box {
 				padding: 3em 2em;
@@ -3464,6 +3348,7 @@ box-shadow: none;
 						margin-top: 3em;
 					}
 
+		/* Header */
 
 			#page-wrapper {
 				padding-top: 0;
@@ -3473,7 +3358,9 @@ box-shadow: none;
 				display: none;
 			}
 
+		/* Banner */
 
+		/* Off-Canvas Navigation */
 
 			#page-wrapper {
 				-moz-backface-visibility: hidden;
@@ -3633,8 +3520,6 @@ box-shadow: none;
 
 	}
 
-	*/
-
 /* Mobile */
 
 	@media screen and (max-width: 736px) {
@@ -3730,7 +3615,7 @@ box-shadow: none;
 		/* Main */
 
 			#main {
-				padding: 1em 0 0 0;
+				padding: 4em 0 0 0;
 			}
 
 				#main > header {

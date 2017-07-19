@@ -166,9 +166,13 @@ def index():
                     following_name = u['name']
                     if following_name == "None":
                         following_name = u['fb_name']
+                        if following_name == "":
+                            following_name = "Unknown User"
                     following_prof_pic = u['prof_pic']
                     if following_prof_pic == "":
                         following_prof_pic = u['fb_prof_pic']
+                        if following_prof_pic == "":
+                            following_prof_pic = "/static/images/anon.png"
                     following_prof_url = u['prof_url']
                     following_artist = u['artist']
                     following_song = u['song']
@@ -458,7 +462,7 @@ def ajax_test():
         my_gid = session["gid"]
         if "following" in session:
             following_gids = session["following"]
-            url = "http://" + IP + "/get_following_2.php?current_user_id=%s" % (my_gid)
+            url = "http://" + IP + "/get_following_ajax.php?current_user_id=%s" % (my_gid)
             result = urllib2.urlopen(url)
             data = json.load(result)
 
@@ -470,6 +474,8 @@ def ajax_test():
                         following_name = u['name']
                         if following_name == "None":
                             following_name = u['fb_name']
+                            if following_name == "":
+                                following_name = "Unknown User"
                         following_artist = u['artist']
                         following_song = u['song']
                         following_playing = int(u["playing"])
@@ -501,6 +507,10 @@ def ajax_test():
                                           "private": following_private})
 
     return jsonify(following = following, me = me)
+
+@app.route("/about", methods=["GET"])
+def about():
+    return render_template("generic.html")
 
 
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
